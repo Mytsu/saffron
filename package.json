@@ -1,18 +1,19 @@
 {
   "name": "wuxiaco-scrapper",
   "version": "1.0.0",
-  "description": "",
+  "description": "WuxiaWorld.co Novel Scrapper",
   "main": "dist/index.js",
   "scripts": {
-    "start": "node ./dist/index.js",
+    "start": "node ./dist/index.js --trace-warnings",
     "prebuild": "eslint ./src --ext .ts",
     "build": "tsc",
     "build:watch": "tsc --watch",
     "start:dev": "nodemon ./dist/index.js --trace-warnings"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Jonathan Arantes <john.mytsu@gmail.com>",
+  "preferGlobal": true,
+  "license": "MIT",
   "devDependencies": {
     "@types/node": "^14.0.27",
     "@types/puppeteer": "^3.0.1",
