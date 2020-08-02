@@ -1,8 +1,9 @@
 import yargs from 'yargs';
 import App from './app';
 
+/*
 const options = yargs
- .usage(`Usage:  ${process.argv0} -u <url>`)
+ .usage(`Usage:  ${process.argv[1]} -u <url>`)
  .option('u',
     {
         alias: 'url',
@@ -13,3 +14,9 @@ const options = yargs
  .argv;
 
 App(options.u);
+
+**/
+
+// TODO: setup yargs again
+
+App('https://www.wuxiaworld.co/Strongest-Abandoned-Son/');
