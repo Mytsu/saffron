@@ -1,8 +1,12 @@
 {
   "name": "wuxiaco-scrapper",
-  "version": "1.0.0",
+  "version": "0.0.0-development",
   "description": "WuxiaWorld.co Novel Scrapper",
   "main": "dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Mytsu/wuxiaco-scrapper.git"
+  },
   "scripts": {
     "start": "node ./dist/index.js --trace-warnings",
     "prebuild": "eslint ./src --ext .ts",
@@ -11,7 +15,11 @@
     "start:dev": "nodemon ./dist/index.js --trace-warnings"
   },
   "keywords": [],
-  "author": "Jonathan Arantes <john.mytsu@gmail.com>",
+  "author": {
+    "name": "Jonathan Arantes",
+    "email": "john.mytsu@gmail.com",
+    "url": "https://github.com/Mytsu"
+  },
   "preferGlobal": true,
   "license": "MIT",
   "devDependencies": {
