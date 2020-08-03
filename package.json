@@ -7,6 +7,9 @@
     "type": "git",
     "url": "https://github.com/Mytsu/wuxiaco-scrapper.git"
   },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
   "scripts": {
     "start": "node ./dist/index.js --trace-warnings",
     "prebuild": "eslint ./src --ext .ts",
