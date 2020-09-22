@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import yargs from 'yargs';
 import App from './app';
 import path from 'path'
@@ -18,6 +20,8 @@ const options = yargs
     }).argv;
 
 App(options.u, options.d ? options.d : path.resolve(__dirname));
+
+// App('https://www.wuxiaworld.co/My-Vampire-System/', 'E:\\Projetos\\wuxiaco-scrapper\\novels');
 
 // TODO: setup yargs again
 

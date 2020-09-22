@@ -1,10 +1,11 @@
 import fs from 'fs';
-import puppeteer from 'puppeteer'
+import axios from 'axios';
+import cheerio from 'cheerio';
 
 interface Novel {
     title: string;
     author: string;
-    chapterLinks: string[];
+    chapters: Chapter[];
 }
 
 interface Chapter {
@@ -13,75 +14,97 @@ interface Chapter {
 }
 
 export default async (url: string, dir: string): Promise<void> => {
+    const novel = await fetch(url);
+    if( novel )
+        save(novel,dir);
+};
+
+const fetch = async (url: string): Promise<Novel | undefined> => {
+    
     try {
-        const browser = await puppeteer.launch();
-        const novelPage = await browser.newPage();
-        const chapterPage = await browser.newPage();
-
-        await novelPage.goto(url).catch(e => console.log(e));
-
-        const novel = await novelPage.evaluate( () => {
-            const title = document.querySelector('#info > h1')?.textContent;
-                if (!title) throw('Failed to fetch novel\'s title');
-            const author = document.querySelector('#info > p')?.textContent?.split('：')[1];
-                if (!author) throw('Failed to fetch novel\'s author');
-
-            const chapterLinks: string[] = [];
-            const query = document.querySelectorAll('#list > dl > dd > a')
-            for (let index = 0; index < query.length; index++) {
-                const link = query[index].getAttribute('href');
-                if (link) chapterLinks.push(link);
-            }
-
-            return { title, author, chapterLinks } as Novel;
+        
+        const { data } = await axios.get(url);
+        const $ = cheerio.load(data);
+        const chapters: Chapter[] = [];
+        const title: string = $('.book-name').text();
+        const author: string = $('.name').text();
+        const links: string[] = [];
+            
+        $('.chapter-item').each((index, elem) => {
+            const link = $(elem).attr('href');
+            links.push(link || '');
         });
 
-        console.log(`Fetching novel: ${novel.title}`);
+        const regex = /[^/]*$/;
 
-        let data = 
+        for (let index = 0; index < links.length; index++) {
+            
+            chapters.push(
+                format(
+                    await get_chapter(url + regex.exec(links[index]))
+                )
+            );
+        }
+
+        return { title, author, chapters };
+
+    } catch(err) { console.error(err.message); }
+};
+
+const get_chapter = async (url: string): Promise<Chapter> => {
+    const { data: chapter_data } = await axios.get(url);
+    const $c = cheerio.load(chapter_data);
+    const chapter_title: string = $c('h1.chapter-title').text();
+    const chapter_content: string = $c('.chapter-entity').html() || '';
+    
+    console.log(chapter_title);
+
+    return { title: chapter_title, content: chapter_content };
+};
+
+const format = (chapter: Chapter): Chapter => {
+    
+    const title = chapter.title;
+    let content = chapter.content;
+
+    content = content.replace(/<br\s*[/]?>/gi, '\n');
+    content = content.replace(/&apos;/gi, "'");
+    content = content.replace(/&quot;/gi, '"');
+    content = content.normalize();
+
+    const lines = content.split('\n');
+    lines.splice(lines.length - 5);
+
+    for (let i = 0; i < lines.length; i++) {
+        lines[i] = lines[i].trim();        
+    }
+
+    content = lines.join('\n');
+
+    return { title, content };
+};
+
+const save = (novel: Novel, dir: string): void => {
+    let data =
 `---
 CJKmainfont: Noto Serif CJK TC
 ---
 
 # ${novel.title}
 
-##### ${novel.author}
+#### ${novel.author}
 
 `;
 
-        let chapter: Chapter;
-        
-        for (let index = 0; index < novel.chapterLinks.length; index++) {
-            await chapterPage.goto(`${url}${novel.chapterLinks[index]}`).catch(e => console.log(e));
-            chapter = await chapterPage.evaluate( () => {
-                const title = document.querySelector('.bookname > h1')?.textContent;
-                if (!title) throw('Failed to fetch chapter\'s title');
-                const content = document.querySelector('#content')
-                    ?.textContent
-                    ?.replace(/<\s*br\s*\/?>/gi, "\n");
-                if (!content) throw('Failed to fetch chapter\'s content');
+    for (let index = 0; index < novel.chapters.length; index++) {
+        data += 
+`## ${novel.chapters[index].title}
 
-                content.replace(/\(adsbygoogle\s?=\s?window\.adsbygoogle\s?\|\|\s?\[\]\)\.push\(\{\}\);/gm, '');
-                content.replace(/ChapterMid\(\);/gm, '');
-                content.replace(/chaptererror\(\);/gm, '');
-
-                return { title, content } as Chapter;
-            });
-
-            console.log(`Chapter fetched: ${chapter.title}`);
-            
-            data = data +
-`## ${chapter.title}
-
-${chapter.content}
+${novel.chapters[index].content}
 
 `;
-        }
+    }
 
-        console.log(`Writing data to file ${dir}\\${novel.title}.md`)
-        fs.writeFileSync(`${dir}\\${novel.title}.md`, data);
-
-        browser.close();
-    } catch(err) { console.error(err); }
-    
-}
+    const full_url = `${dir}/${novel.title}.md`;
+    fs.writeFile(full_url, data, () => { console.log('Done! Saved at [${full_url}]') });
+};
