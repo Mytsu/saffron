@@ -4,6 +4,8 @@ Simple web scrapper using Axios and Cheerio to fetch novels from [WuxiaWorld.co]
 
 ## Install
 
+NPM Package available as soon as the unicode normalizer is done 😉
+
 ```console
 git clone https://github.com/Mytsu/wuxiaco-scrapper.git wuxiaco
 
