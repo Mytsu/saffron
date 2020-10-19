@@ -1,6 +1,6 @@
 {
-  "name": "wuxiaco-scrapper",
-  "version": "0.0.0-development",
+  "name": "@mytsu/wuxiaco",
+  "version": "1.0.1",
   "description": "WuxiaWorld.co Novel Scrapper",
   "main": "dist/index.js",
   "bin": {
@@ -10,9 +10,6 @@
     "type": "git",
     "url": "https://github.com/Mytsu/wuxiaco-scrapper.git"
   },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
-  },
   "scripts": {
     "start": "node ./dist/index.js --trace-warnings",
     "prebuild": "eslint ./src --ext .ts",
@@ -20,7 +17,13 @@
     "build:watch": "tsc --watch",
     "start:dev": "nodemon ./dist/index.js --trace-warnings"
   },
-  "keywords": [],
+  "keywords": [
+    "scrapper",
+    "wuxia",
+    "xianxia",
+    "fantasy",
+    "novel"
+  ],
   "author": {
     "name": "Jonathan Arantes",
     "email": "john.mytsu@gmail.com",
@@ -31,7 +34,6 @@
   "devDependencies": {
     "@types/cheerio": "^0.22.21",
     "@types/node": "^14.0.27",
-    "@types/puppeteer": "^3.0.1",
     "@types/yargs": "^15.0.5",
     "@typescript-eslint/eslint-plugin": "^3.7.1",
     "@typescript-eslint/parser": "^3.7.1",
