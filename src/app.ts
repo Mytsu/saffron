@@ -106,5 +106,5 @@ ${novel.chapters[index].content}
     }
 
     const full_url = `${dir}/${novel.title}.md`;
-    fs.writeFile(full_url, data, () => { console.log(`Done! Saved at [${full_url}]`) });
+    fs.writeFile(full_url, data, () => { console.log(`Done! Saved at ${full_url}`) });
 };
