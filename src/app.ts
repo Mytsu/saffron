@@ -6,6 +6,7 @@ export interface Novel {
     title: string;
     author: string;
     chapters: Chapter[];
+    chapterLinks: string[];
 }
 
 export interface Chapter {
@@ -15,40 +16,47 @@ export interface Chapter {
 
 export const getNovel = async (url: string, dir: string): Promise<void> => {
     const novel = await getNovelMetadata(url);
-    if( novel )
-        dumpToFile(novel,dir);
+    if (novel)
+        dumpToFile(novel, dir);
 };
 
-export const getNovelMetadata = async (url: string): Promise<Novel | undefined> => {
-    
+export const getNovelMetadata = async (url: string): Promise<Novel | null> => {
+
     try {
-        
+
         const { data } = await axios.get(url);
         const $ = cheerio.load(data);
-        const chapters: Chapter[] = [];
         const title: string = $('.book-name').text();
         const author: string = $('.name').text();
-        const links: string[] = [];
-            
-        $('.chapter-item').each((index, elem) => {
+        const chapterLinks: string[] = [];
+
+        $('.chapter-item').each((_, elem) => {
             const link = $(elem).attr('href');
-            links.push(link || '');
+            chapterLinks.push(link || '');
         });
 
-        const regex = /[^/]*$/;
+        return { title, author, chapters: [], chapterLinks };
 
-        for (let index = 0; index < links.length; index++) {
-            
-            chapters.push(
-                formatChapter(
-                    await getChapter(url + regex.exec(links[index]))
-                )
-            );
-        }
+    } catch (err) { console.error(err.message); }
 
-        return { title, author, chapters };
+    return null;
+};
 
-    } catch(err) { console.error(err.message); }
+export const getChapters = async (url: string, novel: Novel): Promise<Novel | null> => {
+    const regex = /[^/]*$/;
+    if (novel) {
+        try {
+            for (let index = 0; index < novel.chapterLinks.length; index++) {
+                novel.chapters.push(
+                    formatChapter(
+                        await getChapter(url + regex.exec(novel.chapterLinks[index]))
+                    )
+                );
+            }
+            return novel;
+        } catch (err) { console.error(err.message); }
+    }
+    return null;
 };
 
 export const getChapter = async (url: string): Promise<Chapter> => {
@@ -56,14 +64,14 @@ export const getChapter = async (url: string): Promise<Chapter> => {
     const $c = cheerio.load(chapter_data);
     const chapter_title: string = $c('h1.chapter-title').text();
     const chapter_content: string = $c('.chapter-entity').html() || '';
-    
+
     console.log(chapter_title);
 
     return { title: chapter_title, content: chapter_content };
 };
 
 export const formatChapter = (chapter: Chapter): Chapter => {
-    
+
     const title = chapter.title;
     let content = chapter.content;
 
@@ -76,7 +84,7 @@ export const formatChapter = (chapter: Chapter): Chapter => {
     lines.splice(lines.length - 5);
 
     for (let i = 0; i < lines.length; i++) {
-        lines[i] = lines[i].trim();        
+        lines[i] = lines[i].trim();
     }
 
     content = lines.join('\n');
@@ -86,7 +94,7 @@ export const formatChapter = (chapter: Chapter): Chapter => {
 
 export const dumpToFile = (novel: Novel, dir: string): void => {
     let data =
-`---
+        `---
 CJKmainfont: Noto Serif CJK TC
 ---
 
@@ -97,8 +105,8 @@ CJKmainfont: Noto Serif CJK TC
 `;
 
     for (let index = 0; index < novel.chapters.length; index++) {
-        data += 
-`## ${novel.chapters[index].title}
+        data +=
+            `## ${novel.chapters[index].title}
 
 ${novel.chapters[index].content}
 
