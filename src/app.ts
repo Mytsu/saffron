@@ -2,24 +2,24 @@ import fs from 'fs';
 import axios from 'axios';
 import cheerio from 'cheerio';
 
-interface Novel {
+export interface Novel {
     title: string;
     author: string;
     chapters: Chapter[];
 }
 
-interface Chapter {
+export interface Chapter {
     title: string;
     content: string;
 }
 
-export default async (url: string, dir: string): Promise<void> => {
-    const novel = await fetch(url);
+export const getNovel = async (url: string, dir: string): Promise<void> => {
+    const novel = await getNovelMetadata(url);
     if( novel )
-        save(novel,dir);
+        dumpToFile(novel,dir);
 };
 
-const fetch = async (url: string): Promise<Novel | undefined> => {
+export const getNovelMetadata = async (url: string): Promise<Novel | undefined> => {
     
     try {
         
@@ -40,8 +40,8 @@ const fetch = async (url: string): Promise<Novel | undefined> => {
         for (let index = 0; index < links.length; index++) {
             
             chapters.push(
-                format(
-                    await get_chapter(url + regex.exec(links[index]))
+                formatChapter(
+                    await getChapter(url + regex.exec(links[index]))
                 )
             );
         }
@@ -51,7 +51,7 @@ const fetch = async (url: string): Promise<Novel | undefined> => {
     } catch(err) { console.error(err.message); }
 };
 
-const get_chapter = async (url: string): Promise<Chapter> => {
+export const getChapter = async (url: string): Promise<Chapter> => {
     const { data: chapter_data } = await axios.get(url);
     const $c = cheerio.load(chapter_data);
     const chapter_title: string = $c('h1.chapter-title').text();
@@ -62,7 +62,7 @@ const get_chapter = async (url: string): Promise<Chapter> => {
     return { title: chapter_title, content: chapter_content };
 };
 
-const format = (chapter: Chapter): Chapter => {
+export const formatChapter = (chapter: Chapter): Chapter => {
     
     const title = chapter.title;
     let content = chapter.content;
@@ -84,7 +84,7 @@ const format = (chapter: Chapter): Chapter => {
     return { title, content };
 };
 
-const save = (novel: Novel, dir: string): void => {
+export const dumpToFile = (novel: Novel, dir: string): void => {
     let data =
 `---
 CJKmainfont: Noto Serif CJK TC

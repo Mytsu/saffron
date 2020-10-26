@@ -4,7 +4,7 @@
   "description": "WuxiaWorld.co Novel Scrapper",
   "main": "dist/index.js",
   "bin": {
-    "wuxiaco": "dist/index.js"
+    "wuxiaco": "dist/main.js"
   },
   "repository": {
     "type": "git",
