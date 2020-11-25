@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import yargs from 'yargs';
-import { getNovel } from './app';
+import { Novel, dumpToFile, getNovel } from './app';
 import path from 'path'
 
 const options = yargs
@@ -19,4 +19,6 @@ const options = yargs
         type: "string",
     }).argv;
 
-getNovel(options.u, options.d ? options.d : path.resolve(__dirname));
+getNovel(options.u).then((novel: Novel) => {
+    dumpToFile(novel, options.d ? path.resolve(options.d) : path.resolve(__dirname));
+});
