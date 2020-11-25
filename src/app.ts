@@ -14,17 +14,16 @@ export interface Chapter {
     content: string;
 }
 
-export const getNovel = async (url: string, dir: string): Promise<void> => {
-    const novel = await getNovelMetadata(url);
-    if (novel)
-        dumpToFile(novel, dir);
+export const getNovel = async (url: string): Promise<Novel> => {
+    const { data } = await axios.get(url);
+    let novel = await getNovelMetadata(data);
+    novel = await getChapters(url, novel);
+    return novel;
 };
 
-export const getNovelMetadata = async (url: string): Promise<Novel | null> => {
-
+export const getNovelMetadata = async (data: string): Promise<Novel> => {
     try {
 
-        const { data } = await axios.get(url);
         const $ = cheerio.load(data);
         const title: string = $('.book-name').text();
         const author: string = $('.name').text();
@@ -37,26 +36,29 @@ export const getNovelMetadata = async (url: string): Promise<Novel | null> => {
 
         return { title, author, chapters: [], chapterLinks };
 
-    } catch (err) { console.error(err.message); }
-
-    return null;
+    } catch (err) {
+        throw(err.message);
+    }
 };
 
-export const getChapters = async (url: string, novel: Novel): Promise<Novel | null> => {
+export const getChapters = async (url: string, metadata: Novel): Promise<Novel> => {
     const regex = /[^/]*$/;
-    if (novel) {
+    if (metadata) {
         try {
-            for (let index = 0; index < novel.chapterLinks.length; index++) {
-                novel.chapters.push(
+            for (let index = 0; index < metadata.chapterLinks.length; index++) {
+                metadata.chapters.push(
                     formatChapter(
-                        await getChapter(url + regex.exec(novel.chapterLinks[index]))
+                        await getChapter(url + regex.exec(metadata.chapterLinks[index]))
                     )
                 );
             }
-            return novel;
-        } catch (err) { console.error(err.message); }
+            return metadata;
+        } catch (err) {
+            throw(err.message);
+        }
+    } else {
+        throw("Novel Metadata is not defined");
     }
-    return null;
 };
 
 export const getChapter = async (url: string): Promise<Chapter> => {
@@ -94,7 +96,7 @@ export const formatChapter = (chapter: Chapter): Chapter => {
 
 export const dumpToFile = (novel: Novel, dir: string): void => {
     let data =
-        `---
+`---
 CJKmainfont: Noto Serif CJK TC
 ---
 
