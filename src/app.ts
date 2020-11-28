@@ -23,7 +23,6 @@ export const getNovel = async (url: string): Promise<Novel> => {
 
 export const getNovelMetadata = async (data: string): Promise<Novel> => {
     try {
-
         const $ = cheerio.load(data);
         const title: string = $('.book-name').text();
         const author: string = $('.name').text();
@@ -35,29 +34,33 @@ export const getNovelMetadata = async (data: string): Promise<Novel> => {
         });
 
         return { title, author, chapters: [], chapterLinks };
-
     } catch (err) {
-        throw(err.message);
+        throw err.message;
     }
 };
 
-export const getChapters = async (url: string, metadata: Novel): Promise<Novel> => {
+export const getChapters = async (
+    url: string,
+    metadata: Novel
+): Promise<Novel> => {
     const regex = /[^/]*$/;
     if (metadata) {
         try {
             for (let index = 0; index < metadata.chapterLinks.length; index++) {
                 metadata.chapters.push(
                     formatChapter(
-                        await getChapter(url + regex.exec(metadata.chapterLinks[index]))
+                        await getChapter(
+                            url + regex.exec(metadata.chapterLinks[index])
+                        )
                     )
                 );
             }
             return metadata;
         } catch (err) {
-            throw(err.message);
+            throw err.message;
         }
     } else {
-        throw("Novel Metadata is not defined");
+        throw 'Novel Metadata is not defined';
     }
 };
 
@@ -73,12 +76,11 @@ export const getChapter = async (url: string): Promise<Chapter> => {
 };
 
 export const formatChapter = (chapter: Chapter): Chapter => {
-
     const title = chapter.title;
     let content = chapter.content;
 
     content = content.replace(/<br\s*[/]?>/gi, '\n');
-    content = content.replace(/&apos;/gi, "'");
+    content = content.replace(/&apos;/gi, '\'');
     content = content.replace(/&quot;/gi, '"');
     content = content.normalize();
 
@@ -95,8 +97,7 @@ export const formatChapter = (chapter: Chapter): Chapter => {
 };
 
 export const dumpToFile = (novel: Novel, dir: string): void => {
-    let data =
-`---
+    let data = `---
 CJKmainfont: Noto Serif CJK TC
 ---
 
@@ -107,8 +108,7 @@ CJKmainfont: Noto Serif CJK TC
 `;
 
     for (let index = 0; index < novel.chapters.length; index++) {
-        data +=
-            `## ${novel.chapters[index].title}
+        data += `## ${novel.chapters[index].title}
 
 ${novel.chapters[index].content}
 
@@ -116,5 +116,7 @@ ${novel.chapters[index].content}
     }
 
     const full_url = `${dir}/${novel.title}.md`;
-    fs.writeFile(full_url, data, () => { console.log(`Done! Saved at ${full_url}`) });
+    fs.writeFile(full_url, data, () => {
+        console.log(`Done! Saved at ${full_url}`);
+    });
 };
