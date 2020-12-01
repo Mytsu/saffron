@@ -1,121 +1,43 @@
+import { WuxiaWorldDotCo } from './scrappers/wuxiaworld.co';
 import fs from 'fs';
-import axios from 'axios';
-import cheerio from 'cheerio';
-
-export interface Novel {
-    title: string;
-    author: string;
-    chapters: Chapter[];
-    chapterLinks: string[];
-}
-
-export interface Chapter {
-    title: string;
-    content: string;
-}
+import { Novel } from './types';
 
 export const getNovel = async (url: string): Promise<Novel> => {
-    const { data } = await axios.get(url);
-    let novel = await getNovelMetadata(data);
-    novel = await getChapters(url, novel);
+    // TODO: match url to respective scrapper
+    const scrapper = new WuxiaWorldDotCo();
+    const novel = scrapper.getNovel(url);
     return novel;
 };
 
-export const getNovelMetadata = async (data: string): Promise<Novel> => {
-    try {
-        const $ = cheerio.load(data);
-        const title: string = $('.book-name').text();
-        const author: string = $('.name').text();
-        const chapterLinks: string[] = [];
-
-        $('.chapter-item').each((_, elem) => {
-            const link = $(elem).attr('href');
-            chapterLinks.push(link || '');
-        });
-
-        return { title, author, chapters: [], chapterLinks };
-    } catch (err) {
-        throw err.message;
-    }
-};
-
-export const getChapters = async (
-    url: string,
-    metadata: Novel
-): Promise<Novel> => {
-    const regex = /[^/]*$/;
-    if (metadata) {
-        try {
-            for (let index = 0; index < metadata.chapterLinks.length; index++) {
-                metadata.chapters.push(
-                    formatChapter(
-                        await getChapter(
-                            url + regex.exec(metadata.chapterLinks[index])
-                        )
-                    )
-                );
-            }
-            return metadata;
-        } catch (err) {
-            throw err.message;
-        }
-    } else {
-        throw 'Novel Metadata is not defined';
-    }
-};
-
-export const getChapter = async (url: string): Promise<Chapter> => {
-    const { data: chapter_data } = await axios.get(url);
-    const $c = cheerio.load(chapter_data);
-    const chapter_title: string = $c('h1.chapter-title').text();
-    const chapter_content: string = $c('.chapter-entity').html() || '';
-
-    console.log(chapter_title);
-
-    return { title: chapter_title, content: chapter_content };
-};
-
-export const formatChapter = (chapter: Chapter): Chapter => {
-    const title = chapter.title;
-    let content = chapter.content;
-
-    content = content.replace(/<br\s*[/]?>/gi, '\n');
-    content = content.replace(/&apos;/gi, '\'');
-    content = content.replace(/&quot;/gi, '"');
-    content = content.normalize();
-
-    const lines = content.split('\n');
-    lines.splice(lines.length - 5);
-
-    for (let i = 0; i < lines.length; i++) {
-        lines[i] = lines[i].trim();
-    }
-
-    content = lines.join('\n');
-
-    return { title, content };
-};
-
-export const dumpToFile = (novel: Novel, dir: string): void => {
-    let data = `---
+export const toMarkdown = (novel: Novel): string => {
+        let data = `---
 CJKmainfont: Noto Serif CJK TC
 ---
 
-# ${novel.title}
+# ${novel.metadata.title}
 
-#### ${novel.author}
+#### ${novel.metadata.author}
 
 `;
 
-    for (let index = 0; index < novel.chapters.length; index++) {
-        data += `## ${novel.chapters[index].title}
+        for (let index = 0; index < novel.chapters.length; index++) {
+            data += `## ${novel.chapters[index].title}
 
 ${novel.chapters[index].content}
 
 `;
+        }
+
+        return data;
     }
 
-    const full_url = `${dir}/${novel.title}.md`;
+export const dumpToFile = (
+    novel: Novel,
+    dir: string
+): void => {
+    const data = toMarkdown(novel);
+
+    const full_url = `${dir}/${novel.metadata.title}.md`;
     fs.writeFile(full_url, data, () => {
         console.log(`Done! Saved at ${full_url}`);
     });
