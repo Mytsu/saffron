@@ -1,30 +1,33 @@
-import { WuxiaWorldDotCo } from '../src/scrappers';
 import 'mocha';
 import { expect } from 'chai';
-import fs from 'fs';
-import path from 'path';
+import axios from 'axios';
+import { WuxiaWorldDotCo } from '../src/scrappers';
 import { NovelMetadata, Scrapper } from '../src/types';
 
 describe('WuxiaWorld.co', () => {
-    let scrapper: Scrapper
+    const url = 'https://www.wuxiaworld.co/Supreme-Magus/';
+    let scrapper: Scrapper;
+
     before(() => {
-        scrapper = new WuxiaWorldDotCo();
+        scrapper = new WuxiaWorldDotCo(url);
     });
-    describe('Function getNovelMetadata', () => {
+
+    describe('getNovelMetadata', () => {   
         let metadata: NovelMetadata;
-        let data: string;
-    
-        const authorName = 'Legion20';
+        const title = 'Supreme Magus';
+        const author = 'Legion20';
     
         before(async () => {
-            data = fs
-                .readFileSync(path.resolve('./samples/Supreme_Magus.html'))
-                .toString('utf-8');
+            const { data } = await axios.get(url);
             metadata = await scrapper.getNovelMetadata(data);
         });
+
+        it(`Novel's name should be '${title}`, () => {
+            expect(metadata?.title).to.be.equal(title);
+        });
     
-        it(`Author's name should be '${authorName}'`, () => {
-            expect(metadata?.author).to.be.equal(authorName);
+        it(`Author's name should be '${author}'`, () => {
+            expect(metadata?.author).to.be.equal(author);
         });
     });
 });
