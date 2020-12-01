@@ -3,10 +3,12 @@ import cheerio from 'cheerio';
 import { Novel, NovelMetadata, Chapter, Scrapper } from '../types';
 
 export class WuxiaWorldDotCo implements Scrapper {
-    async getNovel(url: string): Promise<Novel> {
-        const { data } = await axios.get(url);
+    constructor(readonly url: string) {}
+
+    async getNovel(): Promise<Novel> {
+        const { data } = await axios.get(this.url);
         const metadata = await this.getNovelMetadata(data);
-        const novel = await this._getChapters(url, metadata);
+        const novel = await this._getChapters(metadata);
         return novel;
     }
 
@@ -29,25 +31,20 @@ export class WuxiaWorldDotCo implements Scrapper {
         }
     }
 
-    async _getChapters(url: string, metadata: NovelMetadata): Promise<Novel> {
+    async _getChapters(metadata: NovelMetadata): Promise<Novel> {
         const regex = /[^/]*$/;
         const chapters: Chapter[] = [];
         try {
-            for (
-                let index = 0;
-                index < metadata.chapterLinks.length;
-                index++
-            ) {
+            for (let index = 0; index < metadata.chapterLinks.length; index++) {
                 chapters.push(
                     this._formatChapter(
                         await this.getChapter(
-                            url + regex.exec(metadata.chapterLinks[index])
+                            this.url + regex.exec(metadata.chapterLinks[index])
                         )
                     )
                 );
 
                 // TODO: count chapters loaded, like a progress bar
-
             }
             return { metadata, chapters };
         } catch (err) {
