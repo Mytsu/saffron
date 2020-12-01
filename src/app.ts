@@ -1,11 +1,32 @@
-import { WuxiaWorldDotCo } from './scrappers/wuxiaworld.co';
 import fs from 'fs';
-import { Novel } from './types';
+import { WuxiaWorldDotCo, ReadLightNovelDotOrg } from './scrappers';
+import { Novel, Scrapper } from './types';
+
+export const getScrapper = (url: string): Scrapper => {
+    const hostname = new URL(url).hostname;
+    switch (hostname) {
+        case 'wuxiaworld.co': {
+            return new WuxiaWorldDotCo(url);
+        }
+
+        case 'www.wuxiaworld.co': {
+            return new WuxiaWorldDotCo(url);
+        }
+
+        case 'readlightnovel.org': {
+            return new ReadLightNovelDotOrg(url);
+        }
+
+        case 'www.readlightnovel.org': {
+            return new ReadLightNovelDotOrg(url);
+        }
+
+        default: throw('URL domain not supported.');
+    }
+}
 
 export const getNovel = async (url: string): Promise<Novel> => {
-    // TODO: match url to respective scrapper
-    const scrapper = new WuxiaWorldDotCo();
-    const novel = scrapper.getNovel(url);
+    const novel = getScrapper(url).getNovel();
     return novel;
 };
 

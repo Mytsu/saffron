@@ -7,5 +7,6 @@
     "timeout": 10000,
     "ui": "bdd",
     "watch-files": ["test/**/*.ts"],
-    "require": "ts-node/register"
+    "require": "ts-node/register",
+    "recursive": true
 }
