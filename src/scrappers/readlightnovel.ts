@@ -28,20 +28,22 @@ export class ReadLightNovelDotOrg implements Scrapper {
         try {
             const $ = cheerio.load(data);
             const title: string = $('.block-title > h1').text();
-
+            // TODO: Tests printing empty strings instead of 'N/A'
             const metadata: string[] = [];
-            $('.novel-detail-body > ul > li').each(() => {
-                metadata.push($(this).text());
-            });
-
+            $('.novel-details')
+                .find('.novel-detail-body')
+                .each(() => {
+                    metadata.push($(this).find('ul > li').text());
+                });
+            console.log(metadata);
             const author = metadata[NovelDetails.Authors];
             const coverUrl: string = $('.book-img > img').attr('src') || '';
             const chapterLinks: string[] = [];
-
-            $('.chapter-item').each((_, elem) => {
-                const link = $(elem).attr('href');
-                chapterLinks.push(link || '');
-            });
+            // TODO: Rewrite the chapterLinks scrapper
+            // $('.chapter-item').each((_, elem) => {
+            //     const link = $(elem).attr('href');
+            //     chapterLinks.push(link || '');
+            // });
 
             return { title, author, coverUrl, chapterLinks };
         } catch (err) {
@@ -61,8 +63,6 @@ export class ReadLightNovelDotOrg implements Scrapper {
                         )
                     )
                 );
-
-                // TODO: count chapters loaded, like a progress bar
             }
             return { metadata, chapters };
         } catch (err) {
@@ -72,13 +72,16 @@ export class ReadLightNovelDotOrg implements Scrapper {
 
     async getChapter(url: string): Promise<Chapter> {
         const { data: chapter_data } = await axios.get(url);
-        const $c = cheerio.load(chapter_data);
-        const title: string = $c('h1.chapter-title').text();
-        const content: string = $c('.chapter-entity').html()?.toString() || '';
+        const $ = cheerio.load(chapter_data);
+        // TODO: Rewrite getChapter
+        // const title: string = $('h1.chapter-title').text();
+        // const content: string = $('.chapter-entity').html()?.toString() || '';
+        const title = '';
+        const content = '';
 
-        if (content === '')
+        if (title === '' || content === '')
             console.warn(
-                `Chapter ${title} is empty or there's a parsing error.`
+                `Chapter ${title? title + ' ' : ''}is empty or there's a parsing error.`
             );
 
         return { title, content };
@@ -87,7 +90,7 @@ export class ReadLightNovelDotOrg implements Scrapper {
     _formatChapter(chapter: Chapter): Chapter {
         const title = chapter.title;
         let content = chapter.content;
-
+        // TODO: remove ads scripts from content
         content = content.replace(/<br\s*[/]?>/gi, '\n');
         content = content.replace(/&apos;/gi, "'");
         content = content.replace(/&quot;/gi, '"');
