@@ -1,23 +1,17 @@
 import fs from 'fs';
 import { WuxiaWorldDotCo, ReadLightNovelDotOrg } from './scrappers';
-import { Novel, Scrapper } from './types';
+import { Novel, Scrapper, Domains } from './types';
 
 export const getScrapper = (url: string): Scrapper => {
-    const hostname = new URL(url).hostname;
+    const hostname = new URL(url).hostname.replace('www.', '');
+
     switch (hostname) {
-        case 'wuxiaworld.co': {
+        
+        case Domains.WuxiaWorldCo: {
             return new WuxiaWorldDotCo(url);
         }
-
-        case 'www.wuxiaworld.co': {
-            return new WuxiaWorldDotCo(url);
-        }
-
-        case 'readlightnovel.org': {
-            return new ReadLightNovelDotOrg(url);
-        }
-
-        case 'www.readlightnovel.org': {
+        
+        case Domains.ReadLightNovel: {
             return new ReadLightNovelDotOrg(url);
         }
 
@@ -62,4 +56,8 @@ export const dumpToFile = (
     fs.writeFile(full_url, data, () => {
         console.log(`Done! Saved at ${full_url}`);
     });
+};
+
+export const getSupportedDomains = (): string[] => {
+    return Object.values(Domains);
 };

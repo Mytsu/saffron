@@ -2,7 +2,7 @@ import 'mocha';
 import { expect } from 'chai';
 import axios from 'axios';
 import { NovelMetadata } from '../src/types';
-import { getScrapper } from './../src/app';
+import { getScrapper, getSupportedDomains } from './../src/app';
 
 let metadata: NovelMetadata;
 
@@ -18,6 +18,22 @@ const testPool = [
         response: { title: 'Supreme Magus', author: '' },
     },
 ];
+
+describe('Supported Domains', () => {
+    let domains: string[];
+
+    before(() => {
+        domains = getSupportedDomains();
+    });
+
+    it('ReadLightNovel.org', () => {
+        expect(domains).to.contain('readlightnovel.org');
+    });
+
+    it('WuxiaWorld.co', () => {
+        expect(domains).to.contain('wuxiaworld.co');
+    });
+});
 
 testPool.forEach((test) => {
     describe(test.domain, () => {

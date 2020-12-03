@@ -35,7 +35,6 @@ export class ReadLightNovelDotOrg implements Scrapper {
                 .each(() => {
                     metadata.push($(this).find('ul > li').text());
                 });
-            console.log(metadata);
             const author = metadata[NovelDetails.Authors];
             const coverUrl: string = $('.book-img > img').attr('src') || '';
             const chapterLinks: string[] = [];
@@ -74,10 +73,8 @@ export class ReadLightNovelDotOrg implements Scrapper {
         const { data: chapter_data } = await axios.get(url);
         const $ = cheerio.load(chapter_data);
         // TODO: Rewrite getChapter
-        // const title: string = $('h1.chapter-title').text();
-        // const content: string = $('.chapter-entity').html()?.toString() || '';
-        const title = '';
-        const content = '';
+        const title: string = $('h1.chapter-title').text();
+        const content: string = $('.chapter-entity').html()?.toString() || '';
 
         if (title === '' || content === '')
             console.warn(
