@@ -28,21 +28,20 @@ export class ReadLightNovelDotOrg implements Scrapper {
         try {
             const $ = cheerio.load(data);
             const title: string = $('.block-title > h1').text();
-            // TODO: Tests printing empty strings instead of 'N/A'
             const metadata: string[] = [];
             $('.novel-details')
                 .find('.novel-detail-body')
-                .each(() => {
-                    metadata.push($(this).find('ul > li').text());
+                .each((_, elem) => {
+                    metadata.push($(elem).find('ul > li').text());
                 });
             const author = metadata[NovelDetails.Authors];
-            const coverUrl: string = $('.book-img > img').attr('src') || '';
+            const coverUrl: string = $('.novel-cover > a > img').attr('src') || '';
             const chapterLinks: string[] = [];
-            // TODO: Rewrite the chapterLinks scrapper
-            // $('.chapter-item').each((_, elem) => {
-            //     const link = $(elem).attr('href');
-            //     chapterLinks.push(link || '');
-            // });
+            
+            $('.tab-content > .tab-pane > .chapter-chs > li > a').each((_, elem) => {
+                const link = $(elem).attr('href') || 'Deu Ruim';
+                chapterLinks.push(link);
+            })
 
             return { title, author, coverUrl, chapterLinks };
         } catch (err) {
