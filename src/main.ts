@@ -6,7 +6,7 @@ import { Novel } from './types';
 import path from 'path';
 
 const options = yargs
-    .usage(`Usage:  ${process.argv[1]} -u <url>`)
+    .usage(`Usage:  ${process.argv[1]} -u <url> -d <directory>`)
     .option('u', {
         alias: 'url',
         describe:
