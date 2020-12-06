@@ -16,8 +16,9 @@ const testPool = [
             coverUrl:
                 'https://img.wuxiaworld.co/BookFiles/BookImages/Supreme-Magus.jpg',
             // Specific domain formats links without the domain
-            first_chapterLink:
-                '/Supreme-Magus/2114127.html',
+            chapterLinks: [
+                '/Supreme-Magus/2114127.html'
+            ],
         },
     },
     {
@@ -29,8 +30,10 @@ const testPool = [
             author: 'N/A',
             coverUrl:
                 'https://www.readlightnovel.org/uploads/posters/1554422569.jpg',
-            first_chapterLink:
+            chapterLinks: [
                 'https://www.readlightnovel.org/supreme-magus/chapter-prologue',
+                'https://www.readlightnovel.org/supreme-magus/chapter-917',
+            ]
         },
     },
 ];
@@ -79,11 +82,12 @@ testPool.forEach((test) => {
                 expect(metadata?.chapterLinks).to.have.length.above(0);
             });
 
-            it(`Should have first chapter link matching sample`, () => {
-                expect(metadata?.chapterLinks[0]).to.be.equal(
-                    test.response.first_chapterLink
-                );
+            test.response.chapterLinks.forEach((url, index) => {
+                it(`${index+1}. Should have nth chapter link matching sample`, () => {
+                    expect(metadata.chapterLinks).to.include(url);
+                });
             });
+
         });
     });
 });
