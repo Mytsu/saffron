@@ -12,7 +12,8 @@
   },
   "scripts": {
     "start": "node ./dist/index.js --trace-warnings",
-    "prebuild": "eslint ./src --ext .ts",
+    "lint": "eslint ./src --ext .ts",
+    "prebuild": "rimraf dist",
     "build": "tsc",
     "build:watch": "tsc --watch",
     "start:dev": "nodemon ./dist/index.js --trace-warnings",
@@ -47,6 +48,7 @@
     "mocha": "^8.2.0",
     "nodemon": "^2.0.4",
     "prettier": "^2.2.0",
+    "rimraf": "^3.0.2",
     "ts-node": "^9.0.0",
     "typescript": "^3.9.7"
   },
