@@ -35,13 +35,16 @@ export class ReadLightNovelDotOrg implements Scrapper {
                     metadata.push($(elem).find('ul > li').text());
                 });
             const author = metadata[NovelDetails.Authors];
-            const coverUrl: string = $('.novel-cover > a > img').attr('src') || '';
+            const coverUrl: string =
+                $('.novel-cover > a > img').attr('src') || '';
             const chapterLinks: string[] = [];
-            
-            $('.tab-content > .tab-pane > .chapter-chs > li > a').each((_, elem) => {
-                const link = $(elem).attr('href') || 'Deu Ruim';
-                chapterLinks.push(link);
-            })
+
+            $('.tab-content > .tab-pane > .chapter-chs > li > a').each(
+                (_, elem) => {
+                    const link = $(elem).attr('href') || 'Deu Ruim';
+                    chapterLinks.push(link);
+                }
+            );
 
             return { title, author, coverUrl, chapterLinks };
         } catch (err) {
@@ -50,15 +53,12 @@ export class ReadLightNovelDotOrg implements Scrapper {
     }
 
     async _getChapters(metadata: NovelMetadata): Promise<Novel> {
-        const regex = /[^/]*$/;
         const chapters: Chapter[] = [];
         try {
             for (let index = 0; index < metadata.chapterLinks.length; index++) {
                 chapters.push(
                     this._formatChapter(
-                        await this.getChapter(
-                            this.url + regex.exec(metadata.chapterLinks[index])
-                        )
+                        await this.getChapter(metadata.chapterLinks[index])
                     )
                 );
             }
@@ -71,13 +71,21 @@ export class ReadLightNovelDotOrg implements Scrapper {
     async getChapter(url: string): Promise<Chapter> {
         const { data: chapter_data } = await axios.get(url);
         const $ = cheerio.load(chapter_data);
-        // TODO: Rewrite getChapter
-        const title: string = $('h1.chapter-title').text();
-        const content: string = $('.chapter-entity').html()?.toString() || '';
+        const title: string = $('.block-title > h1')
+            .children() // Novel title is placed inside an <a> tag
+            .remove()
+            .end()
+            .text()
+            .replace(/\s\S\s/gis, ''); // to remove the title separator
+
+        const content = $('.desc').text();
 
         if (title === '' || content === '')
             console.warn(
-                `Chapter ${title? title + ' ' : ''}is empty or there's a parsing error.`
+                `Chapter ${
+                    title ? title + ' ' : ''
+                }is empty or there's a parsing error.\n
+                ${title}:\n${content}`
             );
 
         return { title, content };
@@ -85,21 +93,27 @@ export class ReadLightNovelDotOrg implements Scrapper {
 
     _formatChapter(chapter: Chapter): Chapter {
         const title = chapter.title;
-        let content = chapter.content;
-        // TODO: remove ads scripts from content
-        content = content.replace(/<br\s*[/]?>/gi, '\n');
-        content = content.replace(/&apos;/gi, "'");
-        content = content.replace(/&quot;/gi, '"');
-        content = content.normalize();
+        let content = chapter.content
+            .normalize()
+            .replace(/""/gm, '"\n\n"')
+            // … goes through String.normalize()
+            .replace('…', '...');
+
+        const symbols = ['?', '"', "'", '!', '.'];
+        symbols.forEach((symbol) => {
+            const regex = new RegExp(`\\s\\${symbol}\\s`, 'gm');
+            content = content.replace(regex, `${symbol}\n\n`);
+        });
 
         const lines = content.split('\n');
-        lines.splice(lines.length - 5);
-
         for (let i = 0; i < lines.length; i++) {
             lines[i] = lines[i].trim();
         }
 
         content = lines.join('\n');
+        // start of chapter has many new lines to offset the TTS plugin
+        content = content.replace(/\n\n\n\n/gm, '');
+
         return { title, content };
     }
 }
