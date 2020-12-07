@@ -20,7 +20,7 @@ export class ReadLightNovelDotOrg implements Scrapper {
     async getNovel(): Promise<Novel> {
         const { data } = await axios.get(this.url);
         const metadata = await this.getNovelMetadata(data);
-        const novel = await this._getChapters(metadata);
+        const novel = await this.getChapters(metadata);
         return novel;
     }
 
@@ -52,15 +52,16 @@ export class ReadLightNovelDotOrg implements Scrapper {
         }
     }
 
-    async _getChapters(metadata: NovelMetadata): Promise<Novel> {
+    async getChapters(metadata: NovelMetadata): Promise<Novel> {
         const chapters: Chapter[] = [];
         try {
             for (let index = 0; index < metadata.chapterLinks.length; index++) {
                 chapters.push(
-                    this._formatChapter(
+                    this.formatChapter(
                         await this.getChapter(metadata.chapterLinks[index])
                     )
                 );
+                console.log(chapters[index].title);
             }
             return { metadata, chapters };
         } catch (err) {
@@ -76,9 +77,13 @@ export class ReadLightNovelDotOrg implements Scrapper {
             .remove()
             .end()
             .text()
-            .replace(/\s\S\s/gis, ''); // to remove the title separator
+            .replace(/^\s\S\s/gis, ''); // to remove the title separator
 
-        const content = $('.desc').text();
+        $('.desc > .apester-media').remove();
+        $('.desc > center').remove();
+        $('.desc > small').remove();
+        $('.desc > script').remove();
+        const content = $('.desc').html() || '';
 
         if (title === '' || content === '')
             console.warn(
@@ -87,23 +92,15 @@ export class ReadLightNovelDotOrg implements Scrapper {
                 }is empty or there's a parsing error.\n
                 ${title}:\n${content}`
             );
-
         return { title, content };
     }
 
-    _formatChapter(chapter: Chapter): Chapter {
+    formatChapter(chapter: Chapter): Chapter {
         const title = chapter.title;
         let content = chapter.content
-            .normalize()
-            .replace(/""/gm, '"\n\n"')
-            // … goes through String.normalize()
-            .replace('…', '...');
-
-        const symbols = ['?', '"', "'", '!', '.'];
-        symbols.forEach((symbol) => {
-            const regex = new RegExp(`\\s\\${symbol}\\s`, 'gm');
-            content = content.replace(regex, `${symbol}\n\n`);
-        });
+            .normalize('NFKD')
+            .replace(/<br>/gm, '\n')
+            .replace(/<hr>/gm, '');
 
         const lines = content.split('\n');
         for (let i = 0; i < lines.length; i++) {
