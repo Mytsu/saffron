@@ -68,7 +68,7 @@ export class WuxiaWorldDotCo implements Scrapper {
         let content = chapter.content;
         // TODO: remove ads scripts from content
         content = content.replace(/<br\s*[/]?>/gi, '\n');
-        content = content.replace(/&apos;/gi, '\'');
+        content = content.replace(/&apos;/gi, "'");
         content = content.replace(/&quot;/gi, '"');
         content = content.normalize();
 
