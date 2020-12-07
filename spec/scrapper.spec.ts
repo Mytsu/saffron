@@ -16,9 +16,7 @@ const testPool = [
             coverUrl:
                 'https://img.wuxiaworld.co/BookFiles/BookImages/Supreme-Magus.jpg',
             // Specific domain formats links without the domain
-            chapterLinks: [
-                '/Supreme-Magus/2114127.html'
-            ],
+            chapterLinks: ['/Supreme-Magus/2114127.html'],
         },
     },
     {
@@ -33,7 +31,7 @@ const testPool = [
             chapterLinks: [
                 'https://www.readlightnovel.org/supreme-magus/chapter-prologue',
                 'https://www.readlightnovel.org/supreme-magus/chapter-917',
-            ]
+            ],
         },
     },
 ];
@@ -56,12 +54,12 @@ describe('Supported Domains', () => {
 
 testPool.forEach((test) => {
     describe(test.domain, () => {
-        describe('getNovelMetadata', () => {
-            before(async () => {
-                const { data } = await axios.get(test.url);
-                metadata = await getScrapper(test.url).getNovelMetadata(data);
-            });
+        before(async () => {
+            const { data } = await axios.get(test.url);
+            metadata = await getScrapper(test.url).getNovelMetadata(data);
+        });
 
+        describe('getNovelMetadata', () => {
             it(`Novel's name should be '${test.response.title}'`, () => {
                 expect(metadata?.title).to.be.equal(test.response.title);
             });
@@ -83,11 +81,21 @@ testPool.forEach((test) => {
             });
 
             test.response.chapterLinks.forEach((url, index) => {
-                it(`${index+1}. Should have nth chapter link matching sample`, () => {
+                it(`${
+                    index + 1
+                }. Should have nth chapter link matching sample`, () => {
                     expect(metadata.chapterLinks).to.include(url);
                 });
             });
+        });
 
+        describe('getChapter', () => {
+            it('Should fetch a chapter succesfully', async () => {
+                const chapter = getScrapper(test.url).getChapter(
+                    metadata.chapterLinks[0]
+                );
+                expect(chapter).to.not.be.null;
+            });
         });
     });
 });
