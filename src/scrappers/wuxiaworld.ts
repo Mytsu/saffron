@@ -8,7 +8,7 @@ export class WuxiaWorldDotCo implements Scrapper {
     async getNovel(): Promise<Novel> {
         const { data } = await axios.get(this.url);
         const metadata = await this.getNovelMetadata(data);
-        const novel = await this._getChapters(metadata);
+        const novel = await this.getChapters(metadata);
         return novel;
     }
 
@@ -31,13 +31,13 @@ export class WuxiaWorldDotCo implements Scrapper {
         }
     }
 
-    async _getChapters(metadata: NovelMetadata): Promise<Novel> {
+    async getChapters(metadata: NovelMetadata): Promise<Novel> {
         const regex = /[^/]*$/;
         const chapters: Chapter[] = [];
         try {
             for (let index = 0; index < metadata.chapterLinks.length; index++) {
                 chapters.push(
-                    this._formatChapter(
+                    this.formatChapter(
                         await this.getChapter(
                             this.url + regex.exec(metadata.chapterLinks[index])
                         )
@@ -45,6 +45,7 @@ export class WuxiaWorldDotCo implements Scrapper {
                 );
 
                 // TODO: count chapters loaded, like a progress bar
+                console.log(chapters[index].title);
             }
             return { metadata, chapters };
         } catch (err) {
@@ -63,14 +64,14 @@ export class WuxiaWorldDotCo implements Scrapper {
         return { title, content };
     }
 
-    _formatChapter(chapter: Chapter): Chapter {
+    formatChapter(chapter: Chapter): Chapter {
         const title = chapter.title;
         let content = chapter.content;
         // TODO: remove ads scripts from content
         content = content.replace(/<br\s*[/]?>/gi, '\n');
         content = content.replace(/&apos;/gi, "'");
         content = content.replace(/&quot;/gi, '"');
-        content = content.normalize();
+        content = content.normalize('NFKD');
 
         const lines = content.split('\n');
         lines.splice(lines.length - 5);
