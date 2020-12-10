@@ -83,6 +83,7 @@ export class ReadLightNovelDotOrg implements Scrapper {
         $('.desc > center').remove();
         $('.desc > small').remove();
         $('.desc > script').remove();
+        $('.desc > .hidden').remove();
         const content = $('.desc').html() || '';
 
         if (title === '' || content === '')
@@ -100,7 +101,9 @@ export class ReadLightNovelDotOrg implements Scrapper {
         let content = chapter.content
             .normalize('NFKD')
             .replace(/<br>/gm, '\n')
-            .replace(/<hr>/gm, '');
+            .replace(/<hr>/gm, '')
+            .replace(/<p>/gm, '')
+            .replace(/<\/p>/gm, '\n\n');
 
         const lines = content.split('\n');
         for (let i = 0; i < lines.length; i++) {
