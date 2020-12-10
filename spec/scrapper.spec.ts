@@ -56,7 +56,8 @@ testPool.forEach((test) => {
     describe(test.domain, () => {
         before(async () => {
             const { data } = await axios.get(test.url);
-            metadata = await getScrapper(test.url).getNovelMetadata(data);
+            const scrapper = getScrapper(test.url);
+            metadata = await scrapper.getNovelMetadata(data);
         });
 
         describe('getNovelMetadata', () => {
@@ -90,10 +91,13 @@ testPool.forEach((test) => {
         });
 
         describe('getChapter', () => {
+            const scrapper = getScrapper(test.url);
+
             it('Should fetch a chapter succesfully', async () => {
-                const chapter = getScrapper(test.url).getChapter(
-                    metadata.chapterLinks[0]
+                const chapter = scrapper.formatChapter(
+                    await scrapper.getChapter(metadata.chapterLinks[0])
                 );
+
                 expect(chapter).to.not.be.null;
             });
         });
