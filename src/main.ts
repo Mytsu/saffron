@@ -1,12 +1,14 @@
-#!/usr/bin/env node
-
-import yargs from 'yargs';
+import yargs from 'yargs/yargs';
 import { dumpToFile, getNovel } from './app';
 import { Novel } from './types';
 import path from 'path';
 
-const options = yargs
-    .usage(`Usage:  ${process.argv[1]} -u <url> -d <directory>`)
+// TODO: Handle CLI args without yargs (due to broken webpack imports)
+
+console.log(process.argv);
+
+const options = yargs()
+    .usage(`Usage:  ${path.basename(process.argv[1], '.js')} -u <url> -d <directory>`)
     .option('u', {
         alias: 'url',
         describe:
@@ -17,7 +19,7 @@ const options = yargs
     .option('d', {
         alias: 'directory',
         describe: 'Directory where to save the novel file',
-        type: 'string',
+        type: 'string'
     }).argv;
 
 getNovel(options.u).then((novel: Novel) => {
