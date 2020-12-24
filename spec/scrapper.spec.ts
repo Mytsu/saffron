@@ -1,7 +1,7 @@
 import 'mocha';
 import { expect } from 'chai';
 import axios from 'axios';
-import { NovelMetadata } from '../src/types';
+import { NovelMetadata, Chapter } from '../src/types';
 import { getScrapper, getSupportedDomains } from './../src/app';
 
 let metadata: NovelMetadata;
@@ -94,9 +94,25 @@ testPool.forEach((test) => {
             const scrapper = getScrapper(test.url);
 
             it('Should fetch a chapter succesfully', async () => {
-                const chapter = scrapper.formatChapter(
-                    await scrapper.getChapter(metadata.chapterLinks[0])
-                );
+                let raw_chapter: Chapter;
+                if (test.domain === 'WuxiaWorld.co') {
+                    /* 
+                    If the protocol is not specified, axios makes the request to
+                    localhost, which isn't possible when running CI tests or 
+                    cloud functions; and on local tests it throws ECONNREFUSED
+                    more often than not.
+                    **/
+                    raw_chapter = await scrapper.getChapter(
+                        'https://www.' + test.domain + metadata.chapterLinks[0]
+                    );
+                } else {
+                    raw_chapter = await scrapper.getChapter(
+                        metadata.chapterLinks[0]
+                    );
+                }
+
+                const chapter = scrapper.formatChapter(raw_chapter);
+                console.log(chapter);
 
                 expect(chapter).to.not.be.null;
             });
