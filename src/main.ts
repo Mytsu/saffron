@@ -3,10 +3,6 @@ import { dumpToFile, getNovel } from './app';
 import { Novel } from './types';
 import path from 'path';
 
-// TODO: Handle CLI args without yargs (due to broken webpack imports)
-
-console.log(process.argv);
-
 const options = yargs()
     .usage(`Usage:  ${path.basename(process.argv[1], '.js')} -u <url> -d <directory>`)
     .option('u', {
@@ -20,7 +16,7 @@ const options = yargs()
         alias: 'directory',
         describe: 'Directory where to save the novel file',
         type: 'string'
-    }).argv;
+    }).parse(process.argv);
 
 getNovel(options.u).then((novel: Novel) => {
     dumpToFile(
