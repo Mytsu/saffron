@@ -1,0 +1,27 @@
+{
+    "testPool": [
+        {
+            "domain": "WuxiaWorld.co",
+            "url": "https://www.wuxiaworld.co/Supreme-Magus/",
+            "response": {
+                "title": "Supreme Magus",
+                "author": "Legion20",
+                "coverUrl": "https://img.wuxiaworld.co/BookFiles/BookImages/Supreme-Magus.jpg",
+                "chapterLinks": ["/Supreme-Magus/2114127.html"]
+            }
+        },
+        {
+            "domain": "ReadLightNovel.org",
+            "url": "https://www.readlightnovel.org/supreme-magus,",
+            "response": {
+                "title": "Supreme Magus",
+                "author": "N/A",
+                "coverUrl": "https://www.readlightnovel.org/uploads/posters/1554422569.jpg",
+                "chapterLinks": [
+                    "https://www.readlightnovel.org/supreme-magus/chapter-prologue",
+                    "https://www.readlightnovel.org/supreme-magus/chapter-917"
+                ]
+            }
+        }
+    ]
+}
