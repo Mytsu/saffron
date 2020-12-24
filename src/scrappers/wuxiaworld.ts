@@ -3,7 +3,9 @@ import cheerio from 'cheerio';
 import { Novel, NovelMetadata, Chapter, Scrapper } from '../types';
 
 export class WuxiaWorldDotCo implements Scrapper {
-    constructor(readonly url: string) {}
+    constructor(readonly url: string) {
+        // TODO: Check url protocol and add http if missing
+    }
 
     async getNovel(): Promise<Novel> {
         const { data } = await axios.get(this.url);
