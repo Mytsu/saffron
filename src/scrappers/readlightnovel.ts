@@ -103,7 +103,8 @@ export class ReadLightNovelDotOrg implements Scrapper {
             .replace(/<br>/gm, '\n')
             .replace(/<hr>/gm, '')
             .replace(/<p>/gm, '')
-            .replace(/<\/p>/gm, '\n\n');
+            .replace(/<\/p>/gm, '\n\n')
+            .replace('<script>ChapterMid();</script>\n', '');
 
         const lines = content.split('\n');
         for (let i = 0; i < lines.length; i++) {
@@ -112,7 +113,7 @@ export class ReadLightNovelDotOrg implements Scrapper {
 
         content = lines.join('\n');
         // start of chapter has many new lines to offset the TTS plugin
-        content = content.replace(/\n\n\n\n/gm, '');
+        content = content.replace(/\n\n\n/gm, '');
 
         return { title, content };
     }
