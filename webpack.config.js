@@ -18,7 +18,7 @@ module.exports = {
     },
     output: {
         filename: 'wuxiaco.js',
-        path: path.resolve(__dirname, 'dist'),
+        path: path.resolve(__dirname, 'dist/bin'),
     },
 
     plugins: [
