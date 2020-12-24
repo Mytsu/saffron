@@ -104,7 +104,8 @@ export class ReadLightNovelDotOrg implements Scrapper {
             .replace(/<hr>/gm, '')
             .replace(/<p>/gm, '')
             .replace(/<\/p>/gm, '\n\n')
-            .replace('<script>ChapterMid();</script>\n', '');
+            //eslint-disable-next-line
+            .replace(/\<script\>ChapterMid\(\);\<\/script\>(\\n)?/gm, '');
 
         const lines = content.split('\n');
         for (let i = 0; i < lines.length; i++) {

@@ -68,12 +68,13 @@ export class WuxiaWorldDotCo implements Scrapper {
 
     formatChapter(chapter: Chapter): Chapter {
         const title = chapter.title;
-        let content = chapter.content;
-        // TODO: remove ads scripts from content
-        content = content.replace(/<br\s*[/]?>/gi, '\n');
-        content = content.replace(/&apos;/gi, "'");
-        content = content.replace(/&quot;/gi, '"');
-        content = content.normalize('NFKD');
+        let content = chapter.content
+            .normalize('NFKD')
+            .replace(/<br\s*[/]?>/gi, '\n')
+            .replace(/&apos;/gi, "'")
+            .replace(/&quot;/gi, '"')
+            //eslint-disable-next-line
+            .replace(/\<script\>ChapterMid\(\);\<\/script\>(\\n)?/gm, '');
 
         const lines = content.split('\n');
         lines.splice(lines.length - 5);
