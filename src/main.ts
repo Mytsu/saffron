@@ -19,8 +19,6 @@ const options = yargs()
     }).parse(process.argv);
 
 getNovel(options.u).then((novel: Novel) => {
-    dumpToFile(
-        novel,
-        options.d ? path.resolve(options.d) : path.resolve(__dirname)
-    );
+    const dir = `${options.d ? path.resolve(options.d) : path.resolve(__dirname)}/${novel.metadata.title}.md`;
+    dumpToFile(novel, dir);
 });

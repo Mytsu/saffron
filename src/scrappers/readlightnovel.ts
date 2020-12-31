@@ -1,6 +1,6 @@
 import axios from 'axios';
 import cheerio from 'cheerio';
-import { Novel, NovelMetadata, Chapter, Scrapper } from '../types';
+import { NovelMetadata, Chapter, Scrapper } from '../types';
 
 // Details available below the novel cover and star rating
 enum NovelDetails {
@@ -15,85 +15,62 @@ enum NovelDetails {
 }
 
 export class ReadLightNovelDotOrg implements Scrapper {
-    constructor(readonly url: string) {}
-
-    async getNovel(): Promise<Novel> {
-        const { data } = await axios.get(this.url);
-        const metadata = await this.getNovelMetadata(data);
-        const novel = await this.getChapters(metadata);
-        return novel;
-    }
+    constructor(readonly url: string) { }
 
     async getNovelMetadata(data: string): Promise<NovelMetadata> {
-        try {
-            const $ = cheerio.load(data);
-            const title: string = $('.block-title > h1').text();
-            const metadata: string[] = [];
-            $('.novel-details')
-                .find('.novel-detail-body')
-                .each((_, elem) => {
-                    metadata.push($(elem).find('ul > li').text());
-                });
-            const author = metadata[NovelDetails.Authors];
-            const coverUrl: string =
-                $('.novel-cover > a > img').attr('src') || '';
-            const chapterLinks: string[] = [];
+        const $ = cheerio.load(data);
+        const title: string = $('.block-title > h1').text();
+        const metadata: string[] = [];
+        $('.novel-details')
+            .find('.novel-detail-body')
+            .each((_, elem) => {
+                metadata.push($(elem).find('ul > li').text());
+            });
+        const author = metadata[NovelDetails.Authors];
+        const coverUrl: string =
+            $('.novel-cover > a > img').attr('src') || '';
+        const chapterLinks: string[] = [];
 
-            $('.tab-content > .tab-pane > .chapter-chs > li > a').each(
-                (_, elem) => {
-                    const link = $(elem).attr('href') || 'Deu Ruim';
-                    chapterLinks.push(link);
-                }
-            );
-
-            return { title, author, coverUrl, chapterLinks };
-        } catch (err) {
-            throw err.message;
-        }
-    }
-
-    async getChapters(metadata: NovelMetadata): Promise<Novel> {
-        const chapters: Chapter[] = [];
-        try {
-            for (let index = 0; index < metadata.chapterLinks.length; index++) {
-                chapters.push(
-                    this.formatChapter(
-                        await this.getChapter(metadata.chapterLinks[index])
-                    )
-                );
-                console.log(chapters[index].title);
+        $('.tab-content > .tab-pane > .chapter-chs > li > a').each(
+            (_, elem) => {
+                const link = $(elem).attr('href') || 'Deu Ruim';
+                chapterLinks.push(link);
             }
-            return { metadata, chapters };
-        } catch (err) {
-            throw err.message;
-        }
+        );
+
+        return { title, author, coverUrl, chapterLinks };
     }
 
     async getChapter(url: string): Promise<Chapter> {
-        const { data: chapter_data } = await axios.get(url);
-        const $ = cheerio.load(chapter_data);
-        const title: string = $('.block-title > h1')
-            .children() // Novel title is placed inside an <a> tag
-            .remove()
-            .end()
-            .text()
-            .replace(/^\s\S\s/gis, ''); // to remove the title separator
+        try {
 
-        $('.desc > .apester-media').remove();
-        $('.desc > center').remove();
-        $('.desc > small').remove();
-        $('.desc > script').remove();
-        $('.desc > .hidden').remove();
-        const content = $('.desc').html() || '';
-
-        if (title === '' || content === '')
-            console.warn(
-                `Chapter ${
-                    title ? title + ' ' : ''
-                }is empty or there's a parsing error.\n
-                ${title}:\n${content}`
-            );
-        return { title, content };
+            const { data: chapter_data } = await axios.get(url);
+            const $ = cheerio.load(chapter_data);
+            const title: string = $('.block-title > h1')
+                .children() // Novel title is placed inside an <a> tag
+                .remove()
+                .end()
+                .text()
+                .replace(/^\s\S\s/gis, ''); // to remove the title separator
+    
+            $('.desc > .apester-media').remove();
+            $('.desc > center').remove();
+            $('.desc > small').remove();
+            $('.desc > script').remove();
+            $('.desc > .hidden').remove();
+            const content = $('.desc').html() || '';
+    
+            if (title === '' || content === '')
+                console.warn(
+                    `Chapter ${title ? title + ' ' : ''
+                    }is empty or there's a parsing error.\n
+                    ${title}:\n${content}`
+                );
+            return { title, content };
+        } catch(e) {
+            console.error('getChapter failed');
+            throw e;
+        }
     }
 
     formatChapter(chapter: Chapter): Chapter {

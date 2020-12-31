@@ -7,13 +7,6 @@ export class WuxiaWorldDotCo implements Scrapper {
         // TODO: Check url protocol and add http if missing
     }
 
-    async getNovel(): Promise<Novel> {
-        const { data } = await axios.get(this.url);
-        const metadata = await this.getNovelMetadata(data);
-        const novel = await this.getChapters(metadata);
-        return novel;
-    }
-
     async getNovelMetadata(data: string): Promise<NovelMetadata> {
         try {
             const $ = cheerio.load(data);
@@ -28,42 +21,22 @@ export class WuxiaWorldDotCo implements Scrapper {
             });
 
             return { title, author, coverUrl, chapterLinks };
-        } catch (err) {
-            throw err.message;
-        }
-    }
-
-    async getChapters(metadata: NovelMetadata): Promise<Novel> {
-        const regex = /[^/]*$/;
-        const chapters: Chapter[] = [];
-        try {
-            for (let index = 0; index < metadata.chapterLinks.length; index++) {
-                chapters.push(
-                    this.formatChapter(
-                        await this.getChapter(
-                            this.url + regex.exec(metadata.chapterLinks[index])
-                        )
-                    )
-                );
-
-                // TODO: count chapters loaded, like a progress bar
-                console.log(chapters[index].title);
-            }
-            return { metadata, chapters };
-        } catch (err) {
-            throw err.message;
+        } catch (e) {
+            throw e;
         }
     }
 
     async getChapter(url: string): Promise<Chapter> {
-        const { data: chapter_data } = await axios.get(url);
-        const $c = cheerio.load(chapter_data);
-        const title: string = $c('h1.chapter-title').text();
-        const content: string = $c('.chapter-entity').html()?.toString() || '';
-
-        // TODO: if empty content, log a report of defective chapter to user
-
-        return { title, content };
+        try {
+            const { data: chapter_data } = await axios.get(`https://${new URL(this.url).hostname}${url}`);
+            const $c = cheerio.load(chapter_data);
+            const title: string = $c('h1.chapter-title').text();
+            const content: string = $c('.chapter-entity').html()?.toString() || '';
+            return { title, content };
+        } catch(e) {
+            console.error('getChapter failed');
+            throw e;
+        }
     }
 
     formatChapter(chapter: Chapter): Chapter {
