@@ -81,7 +81,7 @@ export const getChapters = async (
         hideCursor: true,
     });
     try {
-        bar.start(metadata.chapterLinks.length + 1, 0, { title: 'N/A' });
+        bar.start(metadata.chapterLinks.length, 0, { title: 'N/A' });
         for (let index = 0; index < metadata.chapterLinks.length; index++) {
             chapters.push(
                 scrapper.formatChapter(
