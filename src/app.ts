@@ -1,5 +1,6 @@
 import fs from 'fs';
 import axios from 'axios';
+import ProgressBar from 'cli-progress';
 import { WuxiaWorldDotCo, ReadLightNovelDotOrg } from './scrappers';
 import { Novel, Scrapper, Domains, NovelMetadata, Chapter } from './types';
 
@@ -27,10 +28,10 @@ export const getNovel = async (url: string): Promise<Novel> => {
         const metadata = await scrapper.getNovelMetadata(data);
         const novel = await getChapters(scrapper, metadata);
         return novel;
-    } catch(e) {
-        console.error({ url: scrapper.url, error: e })
+    } catch (e) {
+        console.error({ url: scrapper.url, error: e });
     }
-    throw('getNovel failed');
+    throw 'getNovel failed';
 };
 
 export const toMarkdown = (novel: Novel): string => {
@@ -67,20 +68,32 @@ export const getSupportedDomains = (): string[] => {
     return Object.values(Domains);
 };
 
-export const getChapters = async (scrapper: Scrapper, metadata: NovelMetadata): Promise<Novel> => {
+export const getChapters = async (
+    scrapper: Scrapper,
+    metadata: NovelMetadata
+): Promise<Novel> => {
     const chapters: Chapter[] = [];
+    const bar = new ProgressBar.SingleBar({
+        format:
+            'Progress |{bar}| {percentage}% || {value}/{total} Chapters || Chapter: {title}',
+        barCompleteChar: '\u2588',
+        barIncompleteChar: '\u2591',
+        hideCursor: true,
+    });
     try {
+        bar.start(metadata.chapterLinks.length + 1, 0, { title: 'N/A' });
         for (let index = 0; index < metadata.chapterLinks.length; index++) {
             chapters.push(
                 scrapper.formatChapter(
                     await scrapper.getChapter(metadata.chapterLinks[index])
                 )
             );
-            console.log(chapters[index].title);
+            bar.increment({ title: chapters[index].title });
         }
+        bar.stop();
         return { metadata, chapters };
     } catch (err) {
         console.error(err);
     }
-    throw('getChapters failed');
-}
+    throw 'getChapters failed';
+};
