@@ -1,6 +1,6 @@
 import axios from 'axios';
 import cheerio from 'cheerio';
-import { Novel, NovelMetadata, Chapter, Scrapper } from '../types';
+import { NovelMetadata, Chapter, Scrapper } from '../types';
 
 export class WuxiaWorldDotCo implements Scrapper {
     constructor(readonly url: string) {
@@ -22,20 +22,25 @@ export class WuxiaWorldDotCo implements Scrapper {
 
             return { title, author, coverUrl, chapterLinks };
         } catch (e) {
-            throw e;
+            console.error('getNovelMetadata failed', e);
+            process.exit(0);
         }
     }
 
     async getChapter(url: string): Promise<Chapter> {
         try {
-            const { data: chapter_data } = await axios.get(`https://${new URL(this.url).hostname}${url}`);
+            // url format from input might cause issues with axios.get()
+            const { data: chapter_data } = await axios.get(
+                `https://${new URL(this.url).hostname}${url}`
+            );
             const $c = cheerio.load(chapter_data);
             const title: string = $c('h1.chapter-title').text();
-            const content: string = $c('.chapter-entity').html()?.toString() || '';
+            const content: string =
+                $c('.chapter-entity').html()?.toString() || '';
             return { title, content };
-        } catch(e) {
-            console.error('getChapter failed');
-            throw e;
+        } catch (e) {
+            console.error('getChapter failed', e);
+            process.exit(0);
         }
     }
 

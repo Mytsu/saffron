@@ -29,9 +29,9 @@ export const getNovel = async (url: string): Promise<Novel> => {
         const novel = await getChapters(scrapper, metadata);
         return novel;
     } catch (e) {
-        console.error({ url: scrapper.url, error: e });
+        console.error('getNovel failed', { url: scrapper.url, error: e });
+        process.exit(0);
     }
-    throw 'getNovel failed';
 };
 
 export const toMarkdown = (novel: Novel): string => {
@@ -75,7 +75,7 @@ export const getChapters = async (
     const chapters: Chapter[] = [];
     const bar = new ProgressBar.SingleBar({
         format:
-            'Progress |{bar}| {percentage}% || {value}/{total} Chapters || Chapter: {title}',
+            'Progress |{bar}| {percentage}% || {title}',
         barCompleteChar: '\u2588',
         barIncompleteChar: '\u2591',
         hideCursor: true,
@@ -93,7 +93,7 @@ export const getChapters = async (
         bar.stop();
         return { metadata, chapters };
     } catch (err) {
-        console.error(err);
+        console.error('getChapters failed', err);
+        process.exit(0);
     }
-    throw 'getChapters failed';
 };

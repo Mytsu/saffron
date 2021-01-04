@@ -68,8 +68,8 @@ export class ReadLightNovelDotOrg implements Scrapper {
                 );
             return { title, content };
         } catch(e) {
-            console.error('getChapter failed');
-            throw e;
+            console.error('getChapter failed', e);
+            process.exit(0);
         }
     }
 
