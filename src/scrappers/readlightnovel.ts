@@ -43,7 +43,7 @@ export class ReadLightNovelDotOrg implements Scrapper {
 
     async getChapter(url: string): Promise<Chapter> {
         try {
-
+            
             const { data: chapter_data } = await axios.get(url);
             const $ = cheerio.load(chapter_data);
             const title: string = $('.block-title > h1')

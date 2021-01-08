@@ -1,12 +1,25 @@
 import 'mocha';
 import { expect } from 'chai';
 import axios from 'axios';
-import { NovelMetadata, Chapter } from '../src/types';
-import { getScrapper, getSupportedDomains } from './../src/app';
-import * as responses from './responses.json'
+import { NovelMetadata } from '../src/types';
+import { getScrapper, getSupportedDomains } from '../src/app';
+import * as responses from './responses.json';
 
+type TestResponse = {
+    title: string;
+    author: string;
+    coverUrl: string;
+    chapterLinks: string[];
+};
+
+type Test = {
+    domain: string;
+    url: string;
+    response: TestResponse;
+};
+
+const testPool: Test[] = responses.testPool;
 let metadata: NovelMetadata;
-const testPool = responses.testPool;
 
 describe('Supported Domains', () => {
     let domains: string[];
@@ -24,21 +37,20 @@ describe('Supported Domains', () => {
     });
 });
 
-testPool.forEach((test) => {
+testPool.forEach((test: Test) => {
     describe(test.domain, () => {
         before(async () => {
             const { data } = await axios.get(test.url);
-            const scrapper = getScrapper(test.url);
-            metadata = await scrapper.getNovelMetadata(data);
+            metadata = await getScrapper(test.url).getNovelMetadata(data);
         });
 
         describe('getNovelMetadata', () => {
             it(`Novel's name should be '${test.response.title}'`, () => {
-                expect(metadata?.title).to.be.equal(test.response.title);
+                expect(metadata.title).to.be.equal(test.response.title);
             });
 
             it(`Author's name should be '${test.response.author}'`, () => {
-                expect(metadata?.author).to.be.equal(test.response.author);
+                expect(metadata.author).to.be.equal(test.response.author);
             });
 
             if (test.response.coverUrl) {
@@ -50,7 +62,7 @@ testPool.forEach((test) => {
             }
 
             it(`Should have chapter links`, () => {
-                expect(metadata?.chapterLinks).to.have.length.above(0);
+                expect(metadata.chapterLinks).to.have.length.above(0);
             });
 
             test.response.chapterLinks.forEach((url, index) => {
@@ -66,25 +78,11 @@ testPool.forEach((test) => {
             const scrapper = getScrapper(test.url);
 
             it('Should fetch a chapter succesfully', async () => {
-                let raw_chapter: Chapter;
-                if (test.domain === 'WuxiaWorld.co') {
-                    /* 
-                    If the protocol is not specified, axios makes the request to
-                    localhost, which isn't possible when running CI tests or 
-                    cloud functions; and on local tests it throws ECONNREFUSED
-                    more often than not.
-                    **/
-                    raw_chapter = await scrapper.getChapter(
-                        'https://www.' + test.domain + metadata.chapterLinks[0]
-                    );
-                } else {
-                    raw_chapter = await scrapper.getChapter(
-                        metadata.chapterLinks[0]
-                    );
-                }
+                const raw_chapter = await scrapper.getChapter(
+                    metadata.chapterLinks[0]
+                );
 
                 const chapter = scrapper.formatChapter(raw_chapter);
-                console.log(chapter);
 
                 expect(chapter).to.not.be.null;
             });
