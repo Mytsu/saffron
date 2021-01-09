@@ -1,3 +1,4 @@
+import { BoxNovelDotCom } from './scrappers/boxnovel';
 import fs from 'fs';
 import axios from 'axios';
 import ProgressBar from 'cli-progress';
@@ -14,6 +15,10 @@ export const getScrapper = (url: string): Scrapper => {
 
         case Domains.ReadLightNovel: {
             return new ReadLightNovelDotOrg(url);
+        }
+
+        case Domains.BoxNovel: {
+            return new BoxNovelDotCom(url);
         }
 
         default:

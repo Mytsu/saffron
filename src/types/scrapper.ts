@@ -1,4 +1,4 @@
-import { NovelMetadata, Chapter, Novel } from './novel';
+import { NovelMetadata, Chapter } from './novel';
 
 export interface Scrapper {
     url: string;
