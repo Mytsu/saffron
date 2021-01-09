@@ -79,8 +79,7 @@ export const getChapters = async (
 ): Promise<Novel> => {
     const chapters: Chapter[] = [];
     const bar = new ProgressBar.SingleBar({
-        format:
-            'Progress |{bar}| {percentage}% || {title}',
+        format: 'Progress |{bar}| {percentage}% || {title}',
         barCompleteChar: '\u2588',
         barIncompleteChar: '\u2591',
         hideCursor: true,
@@ -88,11 +87,12 @@ export const getChapters = async (
     try {
         bar.start(metadata.chapterLinks.length, 0, { title: 'N/A' });
         for (let index = 0; index < metadata.chapterLinks.length; index++) {
-            chapters.push(
-                scrapper.formatChapter(
-                    await scrapper.getChapter(metadata.chapterLinks[index])
-                )
+
+            const chapter = await scrapper.getChapter(
+                metadata.chapterLinks[index]
             );
+            chapters.push(scrapper.formatChapter(chapter));
+
             bar.increment({ title: chapters[index].title });
         }
         bar.stop();

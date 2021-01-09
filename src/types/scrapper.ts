@@ -5,4 +5,5 @@ export interface Scrapper {
     getNovelMetadata(data: string): Promise<NovelMetadata>;
     getChapter(url: string): Promise<Chapter>;
     formatChapter(chapter: Chapter): Chapter;
+    fetchChapter(url: string): Promise<string>;
 }

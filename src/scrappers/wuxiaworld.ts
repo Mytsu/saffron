@@ -29,11 +29,8 @@ export class WuxiaWorldDotCo implements Scrapper {
 
     async getChapter(url: string): Promise<Chapter> {
         try {
-            // url format from input might cause issues with axios.get()
-            const { data: chapter_data } = await axios.get(
-                `https://${new URL(this.url).hostname}${url}`
-            );
-            const $c = cheerio.load(chapter_data);
+            const data = await this.fetchChapter(url);
+            const $c = cheerio.load(data);
             const title: string = $c('h1.chapter-title').text();
             const content: string =
                 $c('.chapter-entity').html()?.toString() || '';
@@ -63,5 +60,14 @@ export class WuxiaWorldDotCo implements Scrapper {
 
         content = lines.join('\n');
         return { title, content };
+    }
+
+    async fetchChapter(url: string): Promise<string> {
+        // url format from input might cause issues with axios.get()
+        const { data } = await axios.get(
+            `https://${new URL(this.url).hostname}${url}`
+        );
+
+        return data;
     }
 }

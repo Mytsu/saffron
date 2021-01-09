@@ -25,28 +25,32 @@ export class BoxNovelDotCom implements Scrapper {
                 .trim(),
             coverUrl:
                 $('.summary_image > a > .img-responsive').attr('src') || '',
-            chapterLinks: links,
+            chapterLinks: links.reverse(),
         };
 
         return metadata;
     }
     async getChapter(url: string): Promise<Chapter> {
         try {
-            const { data } = await axios.get(url);
+            const data = await this.fetchChapter(url);
             const $ = cheerio.load(data);
             const title: string = $(
-                '.reading-content > .text-left > h1.text-center'
-            ).text();
+                '.reading-content > .text-left'
+            )
+                .children().first().text()
+                .replace(/\n/g, '')
+                .replace(/\t/g, '')
+                .trim();
             const content = $('.reading-content > .text-left')
                 .remove('h1')
                 .text();
-            if (title === '' || content === '')
-                console.warn(
-                    `Chapter ${
-                        title ? title + ' ' : ''
-                    }is empty or there's a parsing error.\n
-                    ${title}:\n${content}`
-                );
+            // if (title === '' || content === '')
+            //     console.warn(
+            //         `\nChapter ${
+            //             title ? title + ' ' : ''
+            //         }is empty or there's a parsing error.\n
+            //         ${title}\n`
+            //     );
             return { title, content };
         } catch (e) {
             console.error('getChapter failed', e);
@@ -60,5 +64,10 @@ export class BoxNovelDotCom implements Scrapper {
             .replace(/\n/g, '\n\n')
             .trim();
         return chapter;
+    }
+
+    async fetchChapter(url: string): Promise<string> {
+        const { data } = await axios.get(url);
+        return data
     }
 }

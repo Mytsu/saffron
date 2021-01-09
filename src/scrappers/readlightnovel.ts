@@ -15,7 +15,7 @@ enum NovelDetails {
 }
 
 export class ReadLightNovelDotOrg implements Scrapper {
-    constructor(readonly url: string) { }
+    constructor(readonly url: string) {}
 
     async getNovelMetadata(data: string): Promise<NovelMetadata> {
         const $ = cheerio.load(data);
@@ -27,8 +27,7 @@ export class ReadLightNovelDotOrg implements Scrapper {
                 metadata.push($(elem).find('ul > li').text());
             });
         const author = metadata[NovelDetails.Authors];
-        const coverUrl: string =
-            $('.novel-cover > a > img').attr('src') || '';
+        const coverUrl: string = $('.novel-cover > a > img').attr('src') || '';
         const chapterLinks: string[] = [];
 
         $('.tab-content > .tab-pane > .chapter-chs > li > a').each(
@@ -43,31 +42,31 @@ export class ReadLightNovelDotOrg implements Scrapper {
 
     async getChapter(url: string): Promise<Chapter> {
         try {
-            
-            const { data: chapter_data } = await axios.get(url);
-            const $ = cheerio.load(chapter_data);
+            const data = await this.fetchChapter(url);
+            const $ = cheerio.load(data);
             const title: string = $('.block-title > h1')
                 .children() // Novel title is placed inside an <a> tag
                 .remove()
                 .end()
                 .text()
                 .replace(/^\s\S\s/gis, ''); // to remove the title separator
-    
+
             $('.desc > .apester-media').remove();
             $('.desc > center').remove();
             $('.desc > small').remove();
             $('.desc > script').remove();
             $('.desc > .hidden').remove();
             const content = $('.desc').html() || '';
-    
+
             if (title === '' || content === '')
                 console.warn(
-                    `Chapter ${title ? title + ' ' : ''
+                    `Chapter ${
+                        title ? title + ' ' : ''
                     }is empty or there's a parsing error.\n
                     ${title}:\n${content}`
                 );
             return { title, content };
-        } catch(e) {
+        } catch (e) {
             console.error('getChapter failed', e);
             process.exit(0);
         }
@@ -94,5 +93,10 @@ export class ReadLightNovelDotOrg implements Scrapper {
         content = content.replace(/\n\n\n/gm, '');
 
         return { title, content };
+    }
+
+    async fetchChapter(url: string): Promise<string> {
+        const { data } = await axios.get(url);
+        return data;
     }
 }
