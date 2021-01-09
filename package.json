@@ -14,8 +14,7 @@
     "start": "node ./dist/index.js --trace-warnings",
     "lint": "eslint ./src --ext .ts",
     "prebuild": "rimraf dist",
-    "build": "tsc",
-    "build:production": "webpack --config webpack.config.js --mode production",
+    "build": "webpack --config webpack.config.js --mode production",
     "start:dev": "nodemon ./dist/index.js --trace-warnings",
     "test": "mocha"
   },
