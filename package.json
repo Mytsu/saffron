@@ -2,9 +2,9 @@
   "name": "@mytsu/wuxiaco",
   "version": "1.1.0",
   "description": "WuxiaWorld.co Novel Scrapper",
-  "main": "dist/index.js",
+  "main": "dist/main.js",
   "bin": {
-    "wuxiaco": "dist/bin/wuxiaco.js"
+    "wuxiaco": "dist/main.js"
   },
   "repository": {
     "type": "git",
@@ -14,7 +14,7 @@
     "start": "node ./dist/index.js --trace-warnings",
     "lint": "eslint ./src --ext .ts",
     "prebuild": "rimraf dist",
-    "build": "webpack --config webpack.config.js --mode production",
+    "build": "tsc",
     "start:dev": "nodemon ./dist/index.js --trace-warnings",
     "test": "mocha"
   },
