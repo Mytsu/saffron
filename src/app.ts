@@ -1,8 +1,11 @@
-import { BoxNovelDotCom } from './scrappers/boxnovel';
 import fs from 'fs';
 import axios from 'axios';
 import ProgressBar from 'cli-progress';
-import { WuxiaWorldDotCo, ReadLightNovelDotOrg } from './scrappers';
+import {
+    WuxiaWorldDotCo,
+    ReadLightNovelDotOrg,
+    BoxNovelDotCom,
+} from './scrappers';
 import { Novel, Scrapper, Domains, NovelMetadata, Chapter } from './types';
 
 export const getScrapper = (url: string): Scrapper => {
@@ -87,7 +90,6 @@ export const getChapters = async (
     try {
         bar.start(metadata.chapterLinks.length, 0, { title: 'N/A' });
         for (let index = 0; index < metadata.chapterLinks.length; index++) {
-
             const chapter = await scrapper.getChapter(
                 metadata.chapterLinks[index]
             );

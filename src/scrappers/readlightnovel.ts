@@ -1,6 +1,7 @@
 import axios from 'axios';
 import cheerio from 'cheerio';
 import { NovelMetadata, Chapter, Scrapper } from '../types';
+import { retry } from '../utils';
 
 // Details available below the novel cover and star rating
 enum NovelDetails {
@@ -96,7 +97,7 @@ export class ReadLightNovelDotOrg implements Scrapper {
     }
 
     async fetchChapter(url: string): Promise<string> {
-        const { data } = await axios.get(url);
+        const { data } = await retry(5, 5000, url, axios.get);
         return data;
     }
 }

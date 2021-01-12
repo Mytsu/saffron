@@ -1,6 +1,7 @@
 import axios from 'axios';
 import cheerio from 'cheerio';
 import { NovelMetadata, Chapter, Scrapper } from '../types';
+import { retry } from '../utils';
 
 export class BoxNovelDotCom implements Scrapper {
     constructor(readonly url: string) {}
@@ -67,7 +68,7 @@ export class BoxNovelDotCom implements Scrapper {
     }
 
     async fetchChapter(url: string): Promise<string> {
-        const { data } = await axios.get(url);
+        const { data } = await retry(5, 5000, url, axios.get);
         return data
     }
 }
