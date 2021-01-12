@@ -87,7 +87,6 @@ testPool.forEach((test: Test) => {
                 );
 
                 const chapter = scrapper.formatChapter(raw_chapter);
-                console.log(chapter);
                 expect(chapter).to.not.be.null;
             });
         });

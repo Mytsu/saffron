@@ -12,8 +12,7 @@ export const retry = async (
     callback: (data: any) => Promise<any>
 ): Promise<any> => {
     try {
-        const res = await callback(data);
-        return res;
+        return await callback(data);
     } catch (e) {
         if (retries < 1) throw `\nRetry failed (max tries reached)\n`;
         await delay(time);
