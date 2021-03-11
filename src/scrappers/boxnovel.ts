@@ -35,9 +35,9 @@ export class BoxNovelDotCom implements Scrapper {
             const data = await get(url);
             const $ = cheerio.load(data);
             const title: string = $(
-                '.reading-content > .text-left'
+                '.c-breadcrumb > ol.breadcrumb > li.active'
             )
-                .children().first().text()
+                .text()
                 .replace(/\n/g, '')
                 .replace(/\t/g, '')
                 .trim();
