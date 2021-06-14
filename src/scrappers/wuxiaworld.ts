@@ -1,6 +1,6 @@
-import axios from 'axios';
 import cheerio from 'cheerio';
 import { NovelMetadata, Chapter, Scrapper } from '../types';
+import { get } from '../utils';
 
 export class WuxiaWorldDotCo implements Scrapper {
     constructor(readonly url: string) {
@@ -9,7 +9,7 @@ export class WuxiaWorldDotCo implements Scrapper {
 
     async getNovelMetadata(): Promise<NovelMetadata> {
         try {
-            const { data } = await axios.get(this.url);
+            const data = await get(this.url);
             const $ = cheerio.load(data);
             const title: string = $('.book-name').text();
             const author: string = $('.name').text();
@@ -30,7 +30,9 @@ export class WuxiaWorldDotCo implements Scrapper {
 
     async getChapter(url: string): Promise<Chapter> {
         try {
-            const data = await this.fetchChapter(url);
+            const data = await get(
+                `https://${new URL(this.url).hostname}${url}`
+            );
             const $c = cheerio.load(data);
             const title: string = $c('h1.chapter-title').text();
             const content: string =
@@ -61,14 +63,5 @@ export class WuxiaWorldDotCo implements Scrapper {
 
         content = lines.join('\n');
         return { title, content };
-    }
-
-    async fetchChapter(url: string): Promise<string> {
-        // url format from input might cause issues with axios.get()
-        const { data } = await axios.get(
-            `https://${new URL(this.url).hostname}${url}`
-        );
-
-        return data;
     }
 }

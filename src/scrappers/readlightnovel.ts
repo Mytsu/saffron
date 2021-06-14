@@ -1,6 +1,6 @@
-import axios from 'axios';
 import cheerio from 'cheerio';
 import { NovelMetadata, Chapter, Scrapper } from '../types';
+import { get } from '../utils';
 
 // Details available below the novel cover and star rating
 enum NovelDetails {
@@ -18,7 +18,7 @@ export class ReadLightNovelDotOrg implements Scrapper {
     constructor(readonly url: string) {}
 
     async getNovelMetadata(): Promise<NovelMetadata> {
-        const { data } = await axios.get(this.url);
+        const data = await get(this.url);
         const $ = cheerio.load(data);
         const title: string = $('.block-title > h1').text();
         const metadata: string[] = [];
@@ -43,7 +43,7 @@ export class ReadLightNovelDotOrg implements Scrapper {
 
     async getChapter(url: string): Promise<Chapter> {
         try {
-            const data = await this.fetchChapter(url);
+            const data = await get(url);
             const $ = cheerio.load(data);
             const title: string = $('.block-title > h1')
                 .children() // Novel title is placed inside an <a> tag
@@ -94,10 +94,5 @@ export class ReadLightNovelDotOrg implements Scrapper {
         content = content.replace(/\n\n\n/gm, '');
 
         return { title, content };
-    }
-
-    async fetchChapter(url: string): Promise<string> {
-        const { data } = await axios.get(url);
-        return data;
     }
 }

@@ -1,12 +1,12 @@
-import axios from 'axios';
 import cheerio from 'cheerio';
 import { NovelMetadata, Chapter, Scrapper } from '../types';
+import { get } from '../utils';
 
 export class BoxNovelDotCom implements Scrapper {
     constructor(readonly url: string) {}
 
     async getNovelMetadata(): Promise<NovelMetadata> {
-        const { data } = await axios.get(this.url);
+        const data = await get(this.url);
         const $ = cheerio.load(data);
         const links: string[] = [];
         $('.version-chap > li.wp-manga-chapter > a').each((_, elem) => {
@@ -33,31 +33,25 @@ export class BoxNovelDotCom implements Scrapper {
     }
     async getChapter(url: string): Promise<Chapter> {
         try {
-            const data = await this.fetchChapter(url);
+            const data = await get(url);
             const $ = cheerio.load(data);
             const title: string = $(
-                '.reading-content > .text-left'
+                '.c-breadcrumb > ol.breadcrumb > li.active'
             )
-                .children().first().text()
+                .text()
                 .replace(/\n/g, '')
                 .replace(/\t/g, '')
                 .trim();
             const content = $('.reading-content > .text-left')
                 .remove('h1')
                 .text();
-            // if (title === '' || content === '')
-            //     console.warn(
-            //         `\nChapter ${
-            //             title ? title + ' ' : ''
-            //         }is empty or there's a parsing error.\n
-            //         ${title}\n`
-            //     );
             return { title, content };
         } catch (e) {
             console.error('getChapter failed', e);
             process.exit(0);
         }
     }
+
     formatChapter(chapter: Chapter): Chapter {
         chapter.content = chapter.content
             .replace(/\t/g, '')
@@ -65,10 +59,5 @@ export class BoxNovelDotCom implements Scrapper {
             .replace(/\n/g, '\n\n')
             .trim();
         return chapter;
-    }
-
-    async fetchChapter(url: string): Promise<string> {
-        const { data } = await axios.get(url);
-        return data
     }
 }

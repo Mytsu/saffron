@@ -1,7 +1,6 @@
 import 'mocha';
 import { expect } from 'chai';
-// import axios from 'axios';
-import puppeteer from 'puppeteer';
+import axios from 'axios';
 import { NovelMetadata } from '../src/types';
 import { getScrapper, getSupportedDomains } from '../src/app';
 import * as responses from './responses.json';
@@ -39,37 +38,14 @@ describe('Supported Domains', () => {
 
     it('BoxNovel.com', () => {
         expect(domains).to.contain('boxnovel.com');
-    });
-
-    it('Ranobes.net', () => {
-        expect(domains).to.contain('ranobes.net');
-    });
+    })
 });
 
 testPool.forEach((test: Test) => {
-    let browser: puppeteer.Browser;
-    let page: puppeteer.Page;
     describe(test.domain, () => {
         before(async () => {
-            // const { data } = await axios.get(test.url);
-            browser = await puppeteer.launch({
-                args: [
-                    '--no-sandbox',
-                    '--disable-setuid-sandbox',
-                    '--user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3312.0 Safari/537.36"',
-                ],
-            });
-            page = await browser.newPage();
-            await page.setJavaScriptEnabled(true);
-            const data = await page.goto(test.url);
-            metadata = await getScrapper(test.url)
-                .getNovelMetadata(await data.text());
+            metadata = await getScrapper(test.url).getNovelMetadata();
         });
-
-        after(async () => {
-            await page.close();
-            await browser.close();
-        })
 
         describe('getNovelMetadata', () => {
             it(`Novel's name should be '${test.response.title}'`, () => {
@@ -101,7 +77,6 @@ testPool.forEach((test: Test) => {
             });
         });
 
-        /* 
         describe('getChapter', () => {
             const scrapper = getScrapper(test.url);
 
@@ -114,6 +89,5 @@ testPool.forEach((test: Test) => {
                 expect(chapter).to.not.be.null;
             });
         });
-        */
     });
 });
