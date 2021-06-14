@@ -1,5 +1,4 @@
 import fs from 'fs';
-import axios from 'axios';
 import ProgressBar from 'cli-progress';
 import {
     WuxiaWorldDotCo,
@@ -7,7 +6,6 @@ import {
     BoxNovelDotCom,
 } from './scrappers';
 import { Novel, Scrapper, Domains, NovelMetadata, Chapter } from './types';
-import { RanobesDotNet } from './scrappers/ranobes';
 
 export const getScrapper = (url: string): Scrapper => {
     const hostname = new URL(url).hostname.replace('www.', '');
@@ -25,10 +23,6 @@ export const getScrapper = (url: string): Scrapper => {
             return new BoxNovelDotCom(url);
         }
 
-        case Domains.Ranobes: {
-            return new RanobesDotNet(url);
-        }
-
         default:
             throw 'URL domain not supported.';
     }
@@ -37,7 +31,7 @@ export const getScrapper = (url: string): Scrapper => {
 export const getNovel = async (url: string): Promise<Novel> => {
     const scrapper = getScrapper(url);
     try {
-        const metadata = await scrapper.getNovelMetadata(scrapper.url);
+        const metadata = await scrapper.getNovelMetadata();
         const novel = await getChapters(scrapper, metadata);
         return novel;
     } catch (e) {

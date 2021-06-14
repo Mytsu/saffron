@@ -17,8 +17,8 @@ enum NovelDetails {
 export class ReadLightNovelDotOrg implements Scrapper {
     constructor(readonly url: string) {}
 
-    async getNovelMetadata(url: string): Promise<NovelMetadata> {
-        const { data } = await axios.get(url);
+    async getNovelMetadata(): Promise<NovelMetadata> {
+        const { data } = await axios.get(this.url);
         const $ = cheerio.load(data);
         const title: string = $('.block-title > h1').text();
         const metadata: string[] = [];

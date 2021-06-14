@@ -60,6 +60,7 @@
     "axios": "^0.21.1",
     "cheerio": "^1.0.0-rc.3",
     "cli-progress": "^3.8.2",
+    "puppeteer": "^10.0.0",
     "yargs": "^16.2.0"
   }
 }

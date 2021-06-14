@@ -2,7 +2,7 @@ import { NovelMetadata, Chapter } from './novel';
 
 export interface Scrapper {
     url: string;
-    getNovelMetadata(url: string): Promise<NovelMetadata>;
+    getNovelMetadata(): Promise<NovelMetadata>;
     getChapter(url: string): Promise<Chapter>;
     formatChapter(chapter: Chapter): Chapter;
     fetchChapter(url: string): Promise<string>;

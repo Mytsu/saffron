@@ -4,7 +4,7 @@
     "package": "./package.json",
     "spec": "spec/**/*.spec.ts",
     "slow": 75,
-    "timeout": 10000,
+    "timeout": 100000,
     "ui": "bdd",
     "watch-files": ["test/**/*.ts"],
     "require": "ts-node/register",

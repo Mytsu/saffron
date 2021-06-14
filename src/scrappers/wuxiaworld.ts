@@ -7,9 +7,9 @@ export class WuxiaWorldDotCo implements Scrapper {
         // TODO: Check url protocol and add http if missing
     }
 
-    async getNovelMetadata(url: string): Promise<NovelMetadata> {
+    async getNovelMetadata(): Promise<NovelMetadata> {
         try {
-            const { data } = await axios.get(url);
+            const { data } = await axios.get(this.url);
             const $ = cheerio.load(data);
             const title: string = $('.book-name').text();
             const author: string = $('.name').text();
