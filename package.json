@@ -1,6 +1,6 @@
 {
   "name": "@mytsu/wuxiaco",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "WebNovel Scrapper, with support of as many domains as I have the pacience to do so",
   "main": "dist/main.js",
   "bin": {
