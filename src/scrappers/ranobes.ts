@@ -1,19 +1,33 @@
-import axios from 'axios';
+import puppeteer from 'puppeteer';
 import cheerio from 'cheerio';
 import { NovelMetadata, Chapter, Scrapper } from '../types';
 
-export class WuxiaWorldDotCo implements Scrapper {
+/*
+    ranobes.net uses CloudFlare's security measures, which makes axios receive
+    only 403 Forbidden responses
+**/
+export class RanobesDotNet implements Scrapper {
+    browser!: puppeteer.Browser;
     constructor(readonly url: string) {
-        // TODO: Check url protocol and add http if missing
+        puppeteer.launch({ headless: true }).then((browser) => {
+            this.browser = browser;
+        });
     }
 
     async getNovelMetadata(url: string): Promise<NovelMetadata> {
         try {
-            const { data } = await axios.get(url);
+            const page = await this.browser.newPage();
+            const data = await (await page.goto(url)).text();
             const $ = cheerio.load(data);
-            const title: string = $('.book-name').text();
-            const author: string = $('.name').text();
-            const coverUrl: string = $('.book-img > img').attr('src') || '';
+            const title: string = $(
+                '.r-fullstory-s1 > .r-date > .title'
+            ).text();
+            const author: string = $(
+                '.r-fullstory-s1 > .r-date > .title > .subtitle'
+            ).text();
+            const coverUrl: string = $(
+                '.r-fullstory-poster > .poster > .cover'
+            ).css('background-image');
             const chapterLinks: string[] = [];
 
             $('.chapter-item').each((_, elem) => {

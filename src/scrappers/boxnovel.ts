@@ -5,7 +5,8 @@ import { NovelMetadata, Chapter, Scrapper } from '../types';
 export class BoxNovelDotCom implements Scrapper {
     constructor(readonly url: string) {}
 
-    async getNovelMetadata(data: string): Promise<NovelMetadata> {
+    async getNovelMetadata(url: string): Promise<NovelMetadata> {
+        const { data } = await axios.get(url);
         const $ = cheerio.load(data);
         const links: string[] = [];
         $('.version-chap > li.wp-manga-chapter > a').each((_, elem) => {
