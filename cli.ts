@@ -1,5 +1,5 @@
-import { parse } from "https://deno.land/std@0.100.0/flags/mod.ts";
-import { encodeUrl } from "https://deno.land/x/encodeurl@1.0.0/mod.ts";
+import { parse } from "./packages.ts";
+import { encodeUrl } from "./packages.ts";
 import { DomainsEnum } from "./types/DomainsEnum.ts";
 import { Scrapper } from "./types/Scrapper.ts";
 import { Novel } from "./types/Novel.ts";

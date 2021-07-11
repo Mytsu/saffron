@@ -1,7 +1,4 @@
-import {
-  DOMParser,
-  HTMLDocument,
-} from "https://deno.land/x/deno_dom@v0.1.12-alpha/deno-dom-wasm.ts";
+import { DOMParser, HTMLDocument } from "../packages.ts";
 import type { Chapter, Novel, NovelMetadata } from "../types/Novel.ts";
 import type { Scrapper } from "../types/Scrapper.ts";
 import { fetchFromAnt } from "../utils/scrapingAntAPI.ts";
@@ -127,10 +124,10 @@ export class ReadLightNovel implements Scrapper {
 
   getChapterContent(document: HTMLDocument): string {
     const content = document.querySelector(".desc");
-    content?.querySelectorAll("center, div, h1, h2").forEach(node => {
+    content?.querySelectorAll("center, div, h1, h2").forEach((node) => {
       node.remove();
     });
-    return content?.innerHTML || '';
+    return content?.innerHTML || "";
   }
 
   private _parseDocument(html: string): HTMLDocument {
