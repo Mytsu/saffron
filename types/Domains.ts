@@ -1,5 +1,5 @@
 export enum Domains {
-  ReadLightNovel = "www.readlightnovel.org",
-  WuxiaWorldCo = "www.wuxiaworld.co",
-  BoxNovel = "www.boxnovel.com",
+  ReadLightNovel = "readlightnovel.org",
+  WuxiaWorldCo = "wuxiaworld.co",
+  BoxNovel = "boxnovel.com",
 }
