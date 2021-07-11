@@ -1,6 +1,6 @@
 import { parse } from "https://deno.land/std@0.100.0/flags/mod.ts";
 import { encodeUrl } from "https://deno.land/x/encodeurl@1.0.0/mod.ts";
-import { Domains } from "./types/Domains.ts";
+import { DomainsEnum } from "./types/DomainsEnum.ts";
 import { Scrapper } from "./types/Scrapper.ts";
 import { Novel } from "./types/Novel.ts";
 import { parseDomain } from "./utils/parseDomain.ts";
@@ -53,12 +53,12 @@ async function getNovel(
 ): Promise<Novel> {
   let scrapper: Scrapper;
   switch (parseDomain(url)) {
-    case Domains.ReadLightNovel:
+    case DomainsEnum.ReadLightNovel:
       scrapper = new ReadLightNovel(encodeUrl(url), antArg);
       break;
 
-    case Domains.BoxNovel:
-    case Domains.WuxiaWorldCo:
+    case DomainsEnum.BoxNovel:
+    case DomainsEnum.WuxiaWorldCo:
     default:
       throw new Error("Domain support not implemented");
   }
