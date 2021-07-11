@@ -112,7 +112,7 @@ export class ReadLightNovel implements Scrapper {
     const _links = document.querySelectorAll(
       ".tab-content > .tab-pane > .chapter-chs > li",
     );
-    _links.forEach((node, index) => {
+    _links.forEach((_node, index) => {
       chapterUrls.push(
         _links.item(index).children.item(0).getAttribute("href") || "",
       );
@@ -127,7 +127,7 @@ export class ReadLightNovel implements Scrapper {
 
   getChapterContent(document: HTMLDocument): string {
     const content = document.querySelector(".desc");
-    content?.querySelectorAll("center, div, h1, h2").forEach((node, index) => {
+    content?.querySelectorAll("center, div, h1, h2").forEach(node => {
       node.remove();
     });
     return content?.innerHTML || '';
