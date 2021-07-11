@@ -1,0 +1,28 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "deno",
+			"command": "run",
+			"problemMatcher": [
+				"$deno"
+			],
+			"args": [
+				"${file}"
+			],
+			"label": "deno: run file"
+		},
+		{
+			"type": "deno",
+			"command": "test",
+			"problemMatcher": [
+				"$deno-test"
+			],
+			"args": [
+				"--allow-all"
+			],
+			"group": "test",
+			"label": "deno: test"
+		}
+	]
+}

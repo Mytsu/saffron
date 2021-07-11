@@ -1,0 +1,14 @@
+{
+    "auto-close-tag.enableAutoCloseTag": false,
+
+    "deno.enable": true,
+    "deno.suggest.imports.hosts": {
+        "https://deno.land": true
+    },
+    "deno.suggest.autoImports": true,
+    "deno.suggest.imports.autoDiscover": true,
+
+    "editor.tabSize": 4,
+
+    "prettier.useTabs": false,
+}

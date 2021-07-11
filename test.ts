@@ -1,0 +1,1 @@
+console.log(new URL('https://www.readlightnovel.org/one-child-two-treasures-the-billionaire-chiefs-good-wife/chapter-2781').hostname);
