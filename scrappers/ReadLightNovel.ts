@@ -1,4 +1,4 @@
-import { DOMParser, HTMLDocument } from "../packages.ts";
+import { DOMParser, encodeUrl, HTMLDocument } from "../packages.ts";
 import type { Chapter, Novel, NovelMetadata } from "../types/Novel.ts";
 import type { Scrapper } from "../types/Scrapper.ts";
 import { fetchFromAnt } from "../utils/scrapingAntAPI.ts";
@@ -87,10 +87,10 @@ export class ReadLightNovel implements Scrapper {
   }
 
   getNovelCoverUrl(document: HTMLDocument): string {
-    return (
+    return encodeUrl(
       document
         ?.querySelector(".novel-cover > a > img")
-        ?.attributes.getNamedItem("src").value || ""
+        ?.attributes.getNamedItem("src").value || "",
     );
   }
 
@@ -111,7 +111,9 @@ export class ReadLightNovel implements Scrapper {
     );
     _links.forEach((_node, index) => {
       chapterUrls.push(
-        _links.item(index).children.item(0).getAttribute("href") || "",
+        encodeUrl(
+          _links.item(index).children.item(0).getAttribute("href") || "",
+        ),
       );
     });
 
