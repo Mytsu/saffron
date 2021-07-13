@@ -1,17 +1,17 @@
-import { Domains } from "../types/Domains.ts";
+import { DomainsEnum } from "../types/DomainsEnum.ts";
 
-export function parseDomain(url: string): Domains {
-  switch (new URL(url).hostname) {
-    case Domains.ReadLightNovel:
-      return Domains.ReadLightNovel;
-    
-    case Domains.BoxNovel:
-      return Domains.BoxNovel;
+export default function (url: string): DomainsEnum {
+  switch (new URL(url).hostname.replace("www.", "")) {
+    case DomainsEnum.ReadLightNovel:
+      return DomainsEnum.ReadLightNovel;
 
-    case Domains.WuxiaWorldCo:
-      return Domains.WuxiaWorldCo;
+    case DomainsEnum.BoxNovel:
+      return DomainsEnum.BoxNovel;
+
+    case DomainsEnum.WuxiaWorldCo:
+      return DomainsEnum.WuxiaWorldCo;
 
     default:
-      throw new Error('Failed to parse domain');
+      throw new Error("Failed to parse domain");
   }
 }

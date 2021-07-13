@@ -1,12 +1,12 @@
-import { config } from 'https://deno.land/x/dotenv@v2.0.0/mod.ts';
+import { config } from "../packages.ts";
 
 export async function fetchFromAnt(url: string): Promise<string> {
   const response = await fetch(
     `https://api.scrapingant.com/v1/general?url=${url}`,
     {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'x-api-key': config().scrapingAntAPI,
+        "x-api-key": config().scrapingAntAPI,
       },
     },
   );

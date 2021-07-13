@@ -1,15 +1,13 @@
-import {
-  DOMParser,
-  HTMLDocument,
-} from "https://deno.land/x/deno_dom@v0.1.12-alpha/deno-dom-wasm.ts";
+import { DOMParser, encodeUrl, HTMLDocument } from "../packages.ts";
 import type { Chapter, Novel, NovelMetadata } from "../types/Novel.ts";
 import type { Scrapper } from "../types/Scrapper.ts";
 import { fetchFromAnt } from "../utils/scrapingAntAPI.ts";
 
-export class ReadLightNovel implements Scrapper {
+export default class implements Scrapper {
   constructor(
     public readonly url: string,
     public readonly ant: boolean = false,
+    public readonly debug: boolean = false
   ) {}
 
   async fetchHtml(url: string): Promise<string> {
@@ -56,7 +54,7 @@ export class ReadLightNovel implements Scrapper {
   }
 
   format(chapter: Chapter): Chapter {
-    const title = chapter.title.replace(" - ", "");
+    const title = chapter.title.replace(/.*\s-\s/g, "");
     let content = chapter.content
       .normalize("NFKD")
       .replace(/<br>/gm, "\n")
@@ -90,10 +88,10 @@ export class ReadLightNovel implements Scrapper {
   }
 
   getNovelCoverUrl(document: HTMLDocument): string {
-    return (
+    return encodeUrl(
       document
         ?.querySelector(".novel-cover > a > img")
-        ?.attributes.getNamedItem("src").value || ""
+        ?.attributes.getNamedItem("src").value || "",
     );
   }
 
@@ -112,9 +110,11 @@ export class ReadLightNovel implements Scrapper {
     const _links = document.querySelectorAll(
       ".tab-content > .tab-pane > .chapter-chs > li",
     );
-    _links.forEach((node, index) => {
+    _links.forEach((_node, index) => {
       chapterUrls.push(
-        _links.item(index).children.item(0).getAttribute("href") || "",
+        encodeUrl(
+          _links.item(index).children.item(0).getAttribute("href") || "",
+        ),
       );
     });
 
@@ -127,10 +127,10 @@ export class ReadLightNovel implements Scrapper {
 
   getChapterContent(document: HTMLDocument): string {
     const content = document.querySelector(".desc");
-    content?.querySelectorAll("center, div, h1, h2").forEach((node, index) => {
+    content?.querySelectorAll("center, div, h1, h2").forEach((node) => {
       node.remove();
     });
-    return content?.innerHTML || '';
+    return content?.innerHTML || "";
   }
 
   private _parseDocument(html: string): HTMLDocument {
