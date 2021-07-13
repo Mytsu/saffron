@@ -6,12 +6,14 @@ import { fetchFromAnt } from "../utils/scrapingAntAPI.ts";
 export default class implements Scrapper {
   constructor(
     public readonly url: string,
-    public readonly ant: boolean = false,
-    public readonly debug: boolean = false
+    public readonly options?: {
+      ant?: boolean;
+      debug?: boolean;
+    }
   ) {}
 
   async fetchHtml(url: string): Promise<string> {
-    if (this.ant) return fetchFromAnt(url);
+    if (this.options?.ant) return fetchFromAnt(url);
     return (await fetch(url)).text();
   }
 
