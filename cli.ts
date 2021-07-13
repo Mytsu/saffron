@@ -23,9 +23,9 @@ Options:
 --debug               Enables logging
 `;
 
-const enableAnt = args.ant ? true : false;
-const initArg = args.init ? Number(args.init) : undefined;
-const endArg = args.end ? Number(args.end) : undefined;
+const ant = args.ant ? true : false;
+const init = args.init ? Number(args.init) : undefined;
+const end = args.end ? Number(args.end) : undefined;
 const filename = args.o || args.out;
 const command = args._[InputEnum.COMMAND];
 const debug = args.debug ? true : false;
@@ -38,18 +38,18 @@ function cmdNotFound(): void {
 
 async function getCommand() {
   const novel = await getScrapper(url.toString(), {
-    ant: enableAnt,
-    debug,
+    ant,
+    debug
   }).getNovel({
-    init: initArg,
-    end: endArg,
+    init,
+    end
   });
   saveAsMarkdown(novel, filename);
 }
 
 async function getLength() {
   const novel = await getScrapper(url.toString(), {
-    ant: enableAnt,
+    ant,
     debug,
   }).getNovel({ init: 0, end: 0 });
   console.info(
