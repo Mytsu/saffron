@@ -27,8 +27,8 @@ Options:
 `;
 
 const enableAnt = args.ant ? true : false;
-const initArg = Number(args.init);
-const endArg = Number(args.end);
+const initArg = args.init ? Number(args.init) : undefined;
+const endArg = args.end ? Number(args.end) : undefined;
 const filename = args.o || args.out;
 const command = args._[InputEnum.COMMAND];
 const debug = args.debug ? true : false;
@@ -64,7 +64,7 @@ async function getCommand() {
         end: endArg,
       },
     );
-  await saveAsMarkdown(novel, filename);
+  saveAsMarkdown(novel, filename);
 }
 
 async function getLength() {
