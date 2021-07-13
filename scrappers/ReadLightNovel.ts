@@ -7,6 +7,7 @@ export class ReadLightNovel implements Scrapper {
   constructor(
     public readonly url: string,
     public readonly ant: boolean = false,
+    public readonly debug: boolean = false
   ) {}
 
   async fetchHtml(url: string): Promise<string> {
@@ -53,7 +54,7 @@ export class ReadLightNovel implements Scrapper {
   }
 
   format(chapter: Chapter): Chapter {
-    const title = chapter.title.replace(" - ", "");
+    const title = chapter.title.replace(/.*\s-\s/g, "");
     let content = chapter.content
       .normalize("NFKD")
       .replace(/<br>/gm, "\n")
