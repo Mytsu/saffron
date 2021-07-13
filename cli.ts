@@ -23,7 +23,6 @@ Options:
 
 -o / --out <filename> Output filename (written in markdown)
 --ant                 Enables the use of ScrapingAnt API
---force-scrap         Ignores the novel in the database and scraps it from the url
 --debug               Enables logging
 `;
 
@@ -76,7 +75,7 @@ async function getLength() {
   );
 }
 
-if (args.help) {
+if (!args._[InputEnum.COMMAND] || args.help) {
   console.log(help);
   Deno.exit(0);
 }
