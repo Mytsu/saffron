@@ -1,7 +1,4 @@
-import {
-  assert,
-  assertEquals,
-} from 'https://deno.land/std@0.100.0/testing/asserts.ts';
+import { assert, assertEquals } from './packages.ts';
 import ReadLightNovel from '../scrappers/ReadLightNovel.ts';
 
 const testSet = JSON.parse(

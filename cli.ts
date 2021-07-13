@@ -39,10 +39,10 @@ function cmdNotFound(): void {
 async function getCommand() {
   const novel = await getScrapper(url.toString(), {
     ant,
-    debug
+    debug,
   }).getNovel({
     init,
-    end
+    end,
   });
   saveAsMarkdown(novel, filename);
 }

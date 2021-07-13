@@ -1,7 +1,7 @@
-import { DOMParser, encodeUrl, HTMLDocument } from "../packages.ts";
-import type { Chapter, Novel, NovelMetadata } from "../types/Novel.ts";
-import type { Scrapper } from "../types/Scrapper.ts";
-import { fetchFromAnt } from "../utils/scrapingAntAPI.ts";
+import { DOMParser, encodeUrl, HTMLDocument } from '../packages.ts';
+import type { Chapter, Novel, NovelMetadata } from '../types/Novel.ts';
+import type { Scrapper } from '../types/Scrapper.ts';
+import { fetchFromAnt } from '../utils/scrapingAntAPI.ts';
 
 export default class implements Scrapper {
   constructor(
@@ -9,7 +9,7 @@ export default class implements Scrapper {
     public readonly options?: {
       ant?: boolean;
       debug?: boolean;
-    }
+    },
   ) {}
 
   async fetchHtml(url: string): Promise<string> {
@@ -31,8 +31,8 @@ export default class implements Scrapper {
     const coverUrl = this.getNovelCoverUrl(document);
     const author = this.getNovelAuthor(document);
     const chapterUrls = this.getNovelChapterUrls(document);
-    if (!title) throw new Error("Title not found");
-    if (!coverUrl) throw new Error("Novel cover not loaded");
+    if (!title) throw new Error('Title not found');
+    if (!coverUrl) throw new Error('Novel cover not loaded');
     if (!author) console.warn(`${title} author not found`);
     return { url: this.url, title, author, coverUrl, chapterUrls };
   }
@@ -56,23 +56,23 @@ export default class implements Scrapper {
   }
 
   format(chapter: Chapter): Chapter {
-    const title = chapter.title.replace(/.*\s-\s/g, "");
+    const title = chapter.title.replace(/.*\s-\s/g, '');
     let content = chapter.content
-      .normalize("NFKD")
-      .replace(/<br>/gm, "\n")
-      .replace(/<hr>/gm, "")
-      .replace(/<p>/gm, "")
-      .replace(/<\/p>/gm, "\n\n")
-      .replace(/\<script\>ChapterMid\(\);\<\/script\>(\\n)?/gm, "");
+      .normalize('NFKD')
+      .replace(/<br>/gm, '\n')
+      .replace(/<hr>/gm, '')
+      .replace(/<p>/gm, '')
+      .replace(/<\/p>/gm, '\n\n')
+      .replace(/\<script\>ChapterMid\(\);\<\/script\>(\\n)?/gm, '');
 
-    const lines = content.split("\n");
+    const lines = content.split('\n');
     for (let i = 0; i < lines.length; i++) {
       lines[i] = lines[i].trim();
     }
 
-    content = lines.join("\n");
+    content = lines.join('\n');
     // start of chapter has many new lines to offset the TTS plugin
-    content = content.replace(/\n\n\n/gm, "");
+    content = content.replace(/\n\n\n/gm, '');
 
     return { title, content };
   }
@@ -84,38 +84,37 @@ export default class implements Scrapper {
 
   getNovelTitle(document: HTMLDocument): string {
     return (
-      document?.querySelector(".block-title")?.querySelector("h1")
-        ?.textContent || ""
+      document?.querySelector('.block-title')?.querySelector('h1')
+        ?.textContent || ''
     );
   }
 
   getNovelCoverUrl(document: HTMLDocument): string {
     return encodeUrl(
       document
-        ?.querySelector(".novel-cover > a > img")
-        ?.attributes.getNamedItem("src").value || "",
+        ?.querySelector('.novel-cover > a > img')
+        ?.attributes.getNamedItem('src').value || '',
     );
   }
 
   getNovelAuthor(document: HTMLDocument): string {
     return (
       document
-        ?.querySelector(".novel-details")
+        ?.querySelector('.novel-details')
         ?.children.item(4)
-        .querySelector(".novel-detail-body > ul > li > a")
-        ?.textContent || ""
+        .querySelector('.novel-detail-body > ul > li > a')?.textContent || ''
     );
   }
 
   getNovelChapterUrls(document: HTMLDocument): string[] {
     const chapterUrls: string[] = [];
     const _links = document.querySelectorAll(
-      ".tab-content > .tab-pane > .chapter-chs > li",
+      '.tab-content > .tab-pane > .chapter-chs > li',
     );
     _links.forEach((_node, index) => {
       chapterUrls.push(
         encodeUrl(
-          _links.item(index).children.item(0).getAttribute("href") || "",
+          _links.item(index).children.item(0).getAttribute('href') || '',
         ),
       );
     });
@@ -124,20 +123,20 @@ export default class implements Scrapper {
   }
 
   getChapterTitle(document: HTMLDocument): string {
-    return document?.querySelector(".block-title > h1")?.textContent || "";
+    return document?.querySelector('.block-title > h1')?.textContent || '';
   }
 
   getChapterContent(document: HTMLDocument): string {
-    const content = document.querySelector(".desc");
-    content?.querySelectorAll("center, div, h1, h2").forEach((node) => {
+    const content = document.querySelector('.desc');
+    content?.querySelectorAll('center, div, h1, h2').forEach((node) => {
       node.remove();
     });
-    return content?.innerHTML || "";
+    return content?.innerHTML || '';
   }
 
   private _parseDocument(html: string): HTMLDocument {
-    const document = new DOMParser().parseFromString(html, "text/html");
-    if (!document) throw new Error("Failed to parse document");
+    const document = new DOMParser().parseFromString(html, 'text/html');
+    if (!document) throw new Error('Failed to parse document');
     return document;
   }
   private _getFormattedChapter(html: string): Chapter {
