@@ -68,7 +68,7 @@ async function getCommand() {
 
 async function getLength() {
   const novel = await getScrapper(url.toString()).getNovel({ init: 0, end: 0 });
-  for await (const url of novel.metadata.chapterUrls) console.log(url);
+  // for await (const url of novel.metadata.chapterUrls) console.log(url);
   console.info(
     `Novel: ${novel.metadata.title}\nChapters: ${novel.metadata.chapterUrls.length}`,
   );
