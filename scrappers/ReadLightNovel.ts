@@ -3,7 +3,7 @@ import type { Chapter, Novel, NovelMetadata } from "../types/Novel.ts";
 import type { Scrapper } from "../types/Scrapper.ts";
 import { fetchFromAnt } from "../utils/scrapingAntAPI.ts";
 
-export class ReadLightNovel implements Scrapper {
+export default class implements Scrapper {
   constructor(
     public readonly url: string,
     public readonly ant: boolean = false,

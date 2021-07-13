@@ -1,9 +1,9 @@
 import { encodeUrl, parse } from "./packages.ts";
 import { DomainsEnum } from "./types/DomainsEnum.ts";
 import { Scrapper } from "./types/Scrapper.ts";
-import { parseDomain } from "./utils/parseDomain.ts";
+import parseDomain from "./utils/parseDomain.ts";
 import saveAsMarkdown from "./utils/saveAsMarkdown.ts";
-import { ReadLightNovel } from "./scrappers/ReadLightNovel.ts";
+import ReadLightNovel from "./scrappers/ReadLightNovel.ts";
 
 enum InputEnum {
   COMMAND = 0,
@@ -11,7 +11,9 @@ enum InputEnum {
 }
 
 const args = parse(Deno.args);
-const help = `Usage: saffron <cmd> <url> [options]
+const help = `Usage: ${
+  new URL("", import.meta.url).pathname
+} <cmd> <url> [options]
 
 Commands:
 get <url>             Fetch and format novel to markdown

@@ -1,6 +1,6 @@
 import { DomainsEnum } from "../types/DomainsEnum.ts";
 
-export function parseDomain(url: string): DomainsEnum {
+export default function (url: string): DomainsEnum {
   switch (new URL(url).hostname.replace("www.", "")) {
     case DomainsEnum.ReadLightNovel:
       return DomainsEnum.ReadLightNovel;

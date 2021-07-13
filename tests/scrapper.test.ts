@@ -2,7 +2,7 @@ import {
   assert,
   assertEquals,
 } from "https://deno.land/std@0.100.0/testing/asserts.ts";
-import { ReadLightNovel } from "../scrappers/ReadLightNovel.ts";
+import ReadLightNovel from "../scrappers/ReadLightNovel.ts";
 
 const testSet = {
   url: "https://www.readlightnovel.org/beastmaster-of-the-ages",
