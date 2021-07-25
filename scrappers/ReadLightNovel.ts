@@ -3,17 +3,19 @@ import type { Chapter, Novel, NovelMetadata } from '../types/Novel.ts';
 import type { Scrapper } from '../types/Scrapper.ts';
 import { fetchFromAnt } from '../utils/scrapingAntAPI.ts';
 
-export default class implements Scrapper {
+export class ReadLightNovelDotOrg implements Scrapper {
   constructor(
-    public readonly url: string,
-    public readonly options?: {
+    readonly url: string,
+    readonly options?: {
       ant?: boolean;
+      antKey?: string;
       debug?: boolean;
     },
   ) {}
 
   async fetchHtml(url: string): Promise<string> {
-    if (this.options?.ant) return fetchFromAnt(url);
+    if (this.options?.ant)
+      return fetchFromAnt(url, { apiKey: this.options?.antKey });
     return (await fetch(url)).text();
   }
 
