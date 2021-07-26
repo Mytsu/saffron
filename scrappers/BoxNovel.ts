@@ -51,15 +51,12 @@ export class BoxNovelDotCom implements Scrapper {
       * 
     */
     if (!urls.length) return [];
-    const chapters = await Promise.all(
+    /* const chapters = await Promise.all(
       urls.map(async (url, _index) => {
         const html = await this.fetchHtml(url);
         return this._getFormattedChapter(html);
       }),
-    );
-    return chapters;
-    /*
-    if (!urls.length) return [];
+    ); */
     const chapters: Chapter[] = [];
     for (let i = 0; i < urls.length; i++) {
       const html = await this.fetchHtml(urls[i]);
@@ -68,8 +65,8 @@ export class BoxNovelDotCom implements Scrapper {
       if (this.options?.debug) console.log(chapter.title);
       chapters.push(chapter);
     }
-    return chapters;
-    */
+
+    return chapters;   
   }
 
   getChapter(html: string): Chapter {
