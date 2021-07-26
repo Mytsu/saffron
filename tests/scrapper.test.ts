@@ -1,37 +1,84 @@
-import {
-  assert,
-  assertEquals,
-} from "https://deno.land/std@0.100.0/testing/asserts.ts";
-import ReadLightNovel from "../scrappers/ReadLightNovel.ts";
+import { assert, assertEquals } from "./packages.ts";
+import getScrapper from "../utils/getScrapper.ts";
 
-const testSet = {
-  url: "https://www.readlightnovel.org/beastmaster-of-the-ages",
-  title: "Beastmaster of the Ages",
-  author: "齐成琨",
-  coverUrl: "https://www.readlightnovel.org/uploads/posters/1603400986.jpg",
-  randomChapterUrl:
-    "https://www.readlightnovel.org/beastmaster-of-the-ages/chapter-413",
-  randomChapterContent:
-    "Please go to https://www.novelupdates.cc/Beastmaster-of-the-Ages/ to read the latest chapters for free",
+type Test = {
+  url: string;
+  title: string;
+  author: string;
+  coverUrl: string;
+  randomChapterUrl: string;
+  randomChapterContent: string;
+  chapterTitles: string[];
 };
 
-const url = testSet.url;
-const rln = new ReadLightNovel(url);
-const novel = await rln.getNovel({ init: 0, end: 10 });
+type TestSet = {
+  domain: string;
+  data: Test;
+};
 
-Deno.test("metadata", () => {
-  assertEquals(novel.metadata.title, testSet.title, "title");
-  assertEquals(novel.metadata.author, testSet.author, "author");
-  assertEquals(novel.metadata.coverUrl, testSet.coverUrl, "coverUrl");
+const currentDir = new URL(".", import.meta.url);
+const testSets = [
+  {
+    domain: "ReadLightNovel",
+    data: JSON.parse(
+      Deno.readTextFileSync(
+        `${currentDir.pathname}/data/readlightnovel.testset.json`,
+      ),
+    ),
+  },
+  {
+    domain: "WuxiaWorld.co",
+    data: JSON.parse(
+      Deno.readTextFileSync(
+        `${currentDir.pathname}/data/wuxiaworlddotco.testset.json`,
+      ),
+    ),
+  },
+  {
+    domain: "BoxNovel.com",
+    data: JSON.parse(
+      Deno.readTextFileSync(
+        `${currentDir.pathname}/data/boxnovel.testset.json`,
+      ),
+    ),
+  },
+];
+
+/**
+ * TODO: Fix test loop for all Scrapper instances
+ * Deno currently has no support for looping through tests using
+ * an async callback.
+ */
+const testSet = testSets[testSets.length - 1];
+const url = testSet.data.url;
+const scrapper = getScrapper(url, { ant: false, debug: true });
+const novel = await scrapper.getNovel({ init: 0, end: 10 });
+
+Deno.test(`${testSet.domain} metadata`, () => {
+  assertEquals(novel.metadata.title, testSet.data.title, "title");
+  assertEquals(novel.metadata.author, testSet.data.author, "author");
+  assertEquals(novel.metadata.coverUrl, testSet.data.coverUrl, "coverUrl");
   assert(
-    novel.metadata.chapterUrls.includes(testSet.randomChapterUrl),
+    novel.metadata.chapterUrls.includes(testSet.data.randomChapterUrl),
     "chapterUrls",
   );
 });
 
-Deno.test("chapter", () => {
-  novel.chapters.forEach((chapter) => {
-    console.log(chapter.content);
-    assert(chapter.content.includes(testSet.randomChapterContent));
-  });
+Deno.test(`${testSet.domain} chapter`, () => {
+  if (testSet.data.randomChapterContent) {
+    novel.chapters.forEach((chapter) => {
+      assert(
+        chapter.content.includes(testSet.data.randomChapterContent),
+        "random content",
+      );
+    });
+  }
+  novel.chapters
+    .slice(0, 1)
+    .forEach((chapter, index) =>
+      assert(
+        chapter.title === testSet.data.chapterTitles[index],
+        "first couple chapter titles",
+      )
+    );
 });
