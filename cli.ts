@@ -20,7 +20,11 @@ Options:
 
 -o / --out <filename> Output filename (written in markdown)
 --debug               Enables logging
+--init <number>       Starting index
+--end <number>        Ending index
+
 You can use the https://scrapingant.com/ API to fetch novels in protected domains.
+
 --ant                 Enables the use of ScrapingAnt API
 --antKey <key>        Replace the default ScrapingAnt API Key
 `;
