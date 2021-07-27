@@ -1,6 +1,6 @@
 import { parse, config } from './packages.ts';
 import getScrapper from './utils/getScrapper.ts';
-import saveAsMarkdown from './utils/saveAsMarkdown.ts';
+import { saveAsMarkdown, saveAsJson } from './utils/save.ts';
 
 enum InputEnum {
   COMMAND = 0,
@@ -21,6 +21,7 @@ Options:
 
   -o / --out <filename> Output filename (written in markdown)
   --debug               Enables logging
+  --json                Outputs novel as json
   --init <number>       Starting index
   --end <number>        Ending index
 
@@ -32,6 +33,7 @@ Options:
 
 const ant = args.ant ? true : false;
 const antKey = args.antKey ? args.antKey : '';
+const asJson = args.json ? true : false;
 const init = args.init ? Number(args.init) : undefined;
 const end = args.end ? Number(args.end) : undefined;
 const filename = args.o || args.out;
@@ -53,7 +55,8 @@ async function getCommand() {
     init,
     end,
   });
-  saveAsMarkdown(novel, filename);
+  if (asJson) saveAsJson(novel, filename)
+  else saveAsMarkdown(novel, filename);
 }
 
 async function getLength() {
