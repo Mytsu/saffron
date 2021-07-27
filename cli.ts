@@ -13,21 +13,22 @@ const help = `Usage: ${
 } <cmd> <url> [options]
 
 Commands:
-get <url>             Fetch and format novel to markdown
-length <url>          Fetch metadata and prints the chapter count
+
+  get <url>             Fetch and format novel to markdown
+  length <url>          Fetch metadata and prints the chapter count
 
 Options:
 
--o / --out <filename> Output filename (written in markdown)
---debug               Enables logging
---init <number>       Starting index
---end <number>        Ending index
+  -o / --out <filename> Output filename (written in markdown)
+  --debug               Enables logging
+  --init <number>       Starting index
+  --end <number>        Ending index
 
-You can use the https://scrapingant.com/ API to fetch novels in protected domains.
+  You can use the https://scrapingant.com/ API to fetch novels in protected domains.
 
---ant                 Enables the use of ScrapingAnt API
---antKey <key>        Replace the default ScrapingAnt API Key
-`;
+  --ant                 Enables the use of ScrapingAnt API
+  --antKey <key>        Replace the default ScrapingAnt API Key
+ `;
 
 const ant = args.ant ? true : false;
 const antKey = args.antKey ? args.antKey : '';
