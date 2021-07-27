@@ -1,60 +1,10 @@
-import { DOMParser, encodeUrl, HTMLDocument } from '../packages.ts';
-import type { Chapter, Novel, NovelMetadata } from '../types/Novel.ts';
-import type { Scrapper } from '../types/Scrapper.ts';
-import { fetchFromAnt } from '../utils/scrapingAntAPI.ts';
+import { encodeUrl, HTMLDocument } from '../packages.ts';
+import type { Chapter } from '../types/Novel.ts';
+import { Scrapper, ScrapperOptions } from '../types/Scrapper.ts';
 
-export class ReadLightNovelDotOrg implements Scrapper {
-  constructor(
-    readonly url: string,
-    readonly options?: {
-      ant?: boolean;
-      antKey?: string;
-      debug?: boolean;
-    },
-  ) {}
-
-  async fetchHtml(url: string): Promise<string> {
-    if (this.options?.ant)
-      return fetchFromAnt(url, { apiKey: this.options?.antKey });
-    return (await fetch(url)).text();
-  }
-
-  async getNovel(options?: { init?: number; end?: number }): Promise<Novel> {
-    const metadata = this.getNovelMetadata(await this.fetchHtml(this.url));
-    const chapters = await this.getChapters(
-      metadata.chapterUrls.slice(options?.init, options?.end),
-    );
-    return { metadata, chapters };
-  }
-
-  getNovelMetadata(html: string): NovelMetadata {
-    const document = this._parseDocument(html);
-    const title = this.getNovelTitle(document);
-    const coverUrl = this.getNovelCoverUrl(document);
-    const author = this.getNovelAuthor(document);
-    const chapterUrls = this.getNovelChapterUrls(document);
-    if (!title) throw new Error('Title not found');
-    if (!coverUrl) throw new Error('Novel cover not loaded');
-    if (!author) console.warn(`${title} author not found`);
-    return { url: this.url, title, author, coverUrl, chapterUrls };
-  }
-
-  async getChapters(urls: string[]): Promise<Chapter[]> {
-    if (!urls.length) return [];
-    const chapters = await Promise.all(
-      urls.map(async (url, _index) => {
-        const html = await this.fetchHtml(url);
-        return this._getFormattedChapter(html);
-      }),
-    );
-    return chapters;
-  }
-
-  getChapter(html: string): Chapter {
-    const document = this._parseDocument(html);
-    const title = this.getChapterTitle(document);
-    const content = this.getChapterContent(document);
-    return { title, content };
+export class ReadLightNovelDotOrg extends Scrapper {
+  constructor(readonly url: string, readonly options?: ScrapperOptions) {
+    super(url, options);
   }
 
   format(chapter: Chapter): Chapter {
@@ -77,11 +27,6 @@ export class ReadLightNovelDotOrg implements Scrapper {
     content = content.replace(/\n\n\n/gm, '');
 
     return { title, content };
-  }
-
-  async getLength() {
-    const metadata = this.getNovelMetadata(await this.fetchHtml(this.url));
-    return metadata.chapterUrls.length;
   }
 
   getNovelTitle(document: HTMLDocument): string {
@@ -134,14 +79,5 @@ export class ReadLightNovelDotOrg implements Scrapper {
       node.remove();
     });
     return content?.innerHTML || '';
-  }
-
-  private _parseDocument(html: string): HTMLDocument {
-    const document = new DOMParser().parseFromString(html, 'text/html');
-    if (!document) throw new Error('Failed to parse document');
-    return document;
-  }
-  private _getFormattedChapter(html: string): Chapter {
-    return this.format(this.getChapter(html));
   }
 }
