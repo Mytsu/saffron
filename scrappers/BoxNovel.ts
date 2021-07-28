@@ -27,9 +27,7 @@ export class BoxNovelDotCom extends Scrapper {
         ?.textContent.replace(/\n/g, '')
         .replace(/\t/g, '')
         .trim() || '';
-
     if (this.options?.debug) console.log(title);
-
     return title;
   }
 
