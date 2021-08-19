@@ -21,6 +21,7 @@ Options:
 
   -o / --out <filename> Output filename (written in markdown)
   --debug               Enables logging
+  --silent              Disables progress bar
   --json                Outputs novel as json
   --init <number>       Starting index
   --end <number>        Ending index
@@ -39,6 +40,7 @@ const end = args.end ? Number(args.end) : undefined;
 const filename = args.o || args.out;
 const command = args._[InputEnum.COMMAND];
 const debug = args.debug ? true : false;
+const silent = args.silent ? true : false;
 
 function cmdNotFound(): void {
   console.error('Saffron requires an url to fetch!');
@@ -51,6 +53,7 @@ async function getCommand() {
     ant,
     antKey,
     debug,
+    silent
   }).getNovel({
     init,
     end,

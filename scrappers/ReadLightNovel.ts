@@ -1,6 +1,7 @@
 import { encodeUrl, HTMLDocument } from '../packages.ts';
 import type { Chapter } from '../types/Novel.ts';
-import { Scrapper, ScrapperOptions } from '../types/Scrapper.ts';
+import type { ScrapperOptions } from "../types/ScrapperOptions.ts";
+import { Scrapper } from './Scrapper.ts';
 
 export class ReadLightNovelDotOrg extends Scrapper {
   constructor(readonly url: string, readonly options?: ScrapperOptions) {

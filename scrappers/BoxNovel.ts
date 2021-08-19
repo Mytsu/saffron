@@ -4,7 +4,8 @@ import {
   HTMLDocument
 } from '../packages.ts';
 import type { Chapter } from '../types/Novel.ts';
-import { Scrapper, ScrapperOptions } from '../types/Scrapper.ts';
+import type { ScrapperOptions } from "../types/ScrapperOptions.ts";
+import { Scrapper } from './Scrapper.ts';
 
 export class BoxNovelDotCom extends Scrapper {
   constructor(readonly url: string, readonly options?: ScrapperOptions) {
@@ -21,6 +22,7 @@ export class BoxNovelDotCom extends Scrapper {
   }
 
   getNovelTitle(document: HTMLDocument): string {
+    document.querySelector('.post-title > h3 > .manga-title-badges')?.remove();
     const title =
       document
         .querySelector('.post-title > h3')

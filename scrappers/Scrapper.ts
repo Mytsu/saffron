@@ -1,12 +1,13 @@
-import type { Chapter, Novel, NovelMetadata } from "./Novel.ts";
-import { DOMParser, HTMLDocument, retryAsync } from "../packages.ts";
+import type { Chapter, Novel, NovelMetadata } from "../types/Novel.ts";
+import { ScrapperOptions } from "../types/ScrapperOptions.ts";
+import {
+  DOMParser,
+  HTMLDocument,
+  ProgressBar,
+  retryAsync,
+} from "../packages.ts";
 import { fetchFromAnt } from "../utils/scrapingAntAPI.ts";
-
-export type ScrapperOptions = {
-  ant?: boolean;
-  antKey?: string;
-  debug?: boolean;
-};
+import { getWidth } from "../utils/tty.ts";
 
 export abstract class Scrapper {
   constructor(readonly url: string, readonly options?: ScrapperOptions) {}
@@ -26,13 +27,22 @@ export abstract class Scrapper {
   async getNovel(options?: { init?: number; end?: number }): Promise<Novel> {
     if (this.options?.debug) console.log("Starting download");
     const metadata = this.getNovelMetadata(await this.fetchHtml(this.url));
+    const progressBar = this.options?.silent ? undefined : new ProgressBar({
+      title: metadata.title,
+      total: metadata.chapterUrls.length,
+      display: ":title | :completed/:total [:bar] :percent Elapsed: :time",
+      width: await getWidth(),
+      clear: true,
+    });
     const chapters = await this.getChapters(
       metadata.chapterUrls.slice(options?.init, options?.end),
+      progressBar,
     );
     return { metadata, chapters };
   }
 
   getNovelMetadata(html: string): NovelMetadata {
+    if (this.options?.debug) console.log("Fetching novel metadata");
     const document = this._parseDocument(html);
     const title = this.getNovelTitle(document);
     const author = this.getNovelAuthor(document);
@@ -41,7 +51,10 @@ export abstract class Scrapper {
     return { url: this.url, title, author, coverUrl, chapterUrls };
   }
 
-  async getChapters(urls: string[]): Promise<Chapter[]> {
+  async getChapters(
+    urls: string[],
+    progressBar?: ProgressBar,
+  ): Promise<Chapter[]> {
     /**
       * The 'await Promise.all()' approach doesn't allow for an interactive and
       * synchronous update of the current progress of the download
@@ -54,12 +67,15 @@ export abstract class Scrapper {
         return this._getFormattedChapter(html);
       }),
     ); */
+    const title = progressBar?.title;
     const chapters: Chapter[] = [];
     for (let i = 0; i < urls.length; i++) {
       const html = await this.fetchHtml(urls[i]);
       const chapter = this._getFormattedChapter(html);
-      // TODO: Iterate progress bar
       if (this.options?.debug) console.log(chapter.title);
+      progressBar?.render(i, {
+        title: `${title} - ${chapter.title}`,
+      });
       chapters.push(chapter);
     }
 

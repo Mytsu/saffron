@@ -1,13 +1,14 @@
 import { encodeUrl } from '../packages.ts';
 import { DomainsEnum } from '../types/DomainsEnum.ts';
-import { Scrapper } from '../types/Scrapper.ts';
+import type { ScrapperOptions } from '../types/ScrapperOptions.ts';
+import { Scrapper } from '../scrappers/Scrapper.ts';
 import { ReadLightNovelDotOrg } from '../scrappers/ReadLightNovel.ts';
 import { BoxNovelDotCom } from '../scrappers/BoxNovel.ts';
 // import { WuxiaWorldDotCo } from '../scrappers/WuxiaWorld.ts';
 
 export default function (
   url: string,
-  options?: { ant?: boolean; antKey?: string; debug?: boolean },
+  options?: ScrapperOptions,
 ): Scrapper {
   const encodedUrl = encodeUrl(url);
   switch (new URL(encodedUrl).hostname.replace('www.', '')) {
