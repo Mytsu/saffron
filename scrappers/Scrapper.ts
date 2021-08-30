@@ -69,7 +69,8 @@ export abstract class Scrapper {
     ); */
     const title = progressBar?.title;
     const chapters: Chapter[] = [];
-    for (let i = 0; i < urls.length; i++) {
+    let i: number;
+    for (i = 0; i < urls.length; i++) {
       const html = await this.fetchHtml(urls[i]);
       const chapter = this._getFormattedChapter(html);
       if (this.options?.debug) console.log(chapter.title);
@@ -78,7 +79,7 @@ export abstract class Scrapper {
       });
       chapters.push(chapter);
     }
-
+    progressBar?.render(i, { title: `${title} - ${chapters[i].title}` });
     return chapters;
   }
 
