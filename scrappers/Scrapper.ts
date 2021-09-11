@@ -55,18 +55,7 @@ export abstract class Scrapper {
     urls: string[],
     progressBar?: ProgressBar,
   ): Promise<Chapter[]> {
-    /**
-      * The 'await Promise.all()' approach doesn't allow for an interactive and
-      * synchronous update of the current progress of the download
-      *
-    */
     if (!urls.length) return [];
-    /* const chapters = await Promise.all(
-      urls.map(async (url, _index) => {
-        const html = await this.fetchHtml(url);
-        return this._getFormattedChapter(html);
-      }),
-    ); */
     const title = progressBar?.title;
     const chapters: Chapter[] = [];
     let i: number;
@@ -79,7 +68,6 @@ export abstract class Scrapper {
       });
       chapters.push(chapter);
     }
-    progressBar?.render(i, { title: `${title} - ${chapters[i].title}` });
     return chapters;
   }
 
