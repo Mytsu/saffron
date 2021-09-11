@@ -10,6 +10,7 @@ import { fetchFromAnt } from "../utils/scrapingAntAPI.ts";
 import { getWidth } from "../utils/tty.ts";
 
 export abstract class Scrapper {
+  private _MAX_PROGRESSBAR_TITLE = 23;
   constructor(readonly url: string, readonly options?: ScrapperOptions) {}
 
   async fetchHtml(url: string): Promise<string> {
@@ -56,7 +57,6 @@ export abstract class Scrapper {
     progressBar?: ProgressBar,
   ): Promise<Chapter[]> {
     if (!urls.length) return [];
-    const title = progressBar?.title;
     const chapters: Chapter[] = [];
     let i: number;
     for (i = 0; i < urls.length; i++) {
@@ -64,7 +64,11 @@ export abstract class Scrapper {
       const chapter = this._getFormattedChapter(html);
       if (this.options?.debug) console.log(chapter.title);
       progressBar?.render(i, {
-        title: `${title} - ${chapter.title}`,
+        title: `${
+          (chapter.title.length >= this._MAX_PROGRESSBAR_TITLE)
+            ? (chapter.title.slice(0, this._MAX_PROGRESSBAR_TITLE - 3) + '...')
+            : chapter.title
+        }`,
       });
       chapters.push(chapter);
     }
