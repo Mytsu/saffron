@@ -4,7 +4,7 @@ import type { ScrapperOptions } from '../types/ScrapperOptions.ts';
 import { Scrapper } from '../scrappers/Scrapper.ts';
 import { ReadLightNovelDotOrg } from '../scrappers/ReadLightNovel.ts';
 import { BoxNovelDotCom } from '../scrappers/BoxNovel.ts';
-// import { WuxiaWorldDotCo } from '../scrappers/WuxiaWorld.ts';
+import { WuxiaWorldDotCo } from '../scrappers/WuxiaWorldDotCo.ts';
 
 export default function (
   url: string,
@@ -19,7 +19,7 @@ export default function (
       return new BoxNovelDotCom(encodedUrl, options);
       
     case DomainsEnum.WuxiaWorldCo:
-      // return new WuxiaWorldDotCo(encodedUrl, options);
+      return new WuxiaWorldDotCo(encodedUrl, options);
         
     default:
       throw new Error('Domain not supported :(');
