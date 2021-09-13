@@ -1,4 +1,4 @@
-import { parse, config } from './packages.ts';
+import { parse } from './packages.ts';
 import getScrapper from './utils/getScrapper.ts';
 import { saveAsMarkdown, saveAsJson } from './utils/save.ts';
 
@@ -80,11 +80,6 @@ if (!args._[InputEnum.COMMAND] || args.help) {
 
 if (!args._[InputEnum.INPUT]) {
   console.error('url not provided');
-  Deno.exit(1);
-}
-
-if (!config().scrappingAntAPI && ant) {
-  console.error('ScrapingAntAPI is enabled but there is no API key provided.')
   Deno.exit(1);
 }
 
