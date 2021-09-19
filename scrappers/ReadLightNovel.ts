@@ -7,16 +7,18 @@ export class ReadLightNovelDotOrg extends Scrapper {
   constructor(readonly url: string, readonly options?: ScrapperOptions) {
     super(url, options);
   }
-
+  
   format(chapter: Chapter): Chapter {
     const title = chapter.title.replace(/.*\s-\s/g, '');
     let content = chapter.content
       .normalize('NFKD')
       .replace(/<br>/gm, '\n')
-      .replace(/<hr>/gm, '')
+      .replace(/\<script\>ChapterMid\(\);\<\/script\>(\\n)?/gm, '')
+      .replace('&nbsp;', '')
       .replace(/<p>/gm, '')
       .replace(/<\/p>/gm, '\n\n')
-      .replace(/\<script\>ChapterMid\(\);\<\/script\>(\\n)?/gm, '');
+      .replace(/<\w*\s\w*\W*\w*\W*>/gm, '')
+      .replace(/<\/*\w*>/gm, '');
 
     const lines = content.split('\n');
     for (let i = 0; i < lines.length; i++) {

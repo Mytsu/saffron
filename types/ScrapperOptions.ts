@@ -3,4 +3,5 @@ export type ScrapperOptions = {
   antKey?: string;
   debug?: boolean;
   silent?: boolean;
+  headless?: boolean;
 };

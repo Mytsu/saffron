@@ -4,6 +4,7 @@ import {
   DOMParser,
   HTMLDocument,
   ProgressBar,
+  puppeteer,
   retryAsync,
 } from "../packages.ts";
 import { fetchFromAnt } from "../utils/scrapingAntAPI.ts";
@@ -16,6 +17,20 @@ export abstract class Scrapper {
   async fetchHtml(url: string): Promise<string> {
     if (this.options?.ant) {
       return fetchFromAnt(url, { apiKey: this.options?.antKey });
+    }
+
+    if (this.options?.headless) {
+      const browser = await puppeteer.launch();
+      const page = await browser.newPage();
+      await page.goto(url);
+      await page.waitForTimeout(2000);
+      await page.waitForNavigation({ waitUntil: "networkidle0" });
+      const html = await page.content();
+      await browser.close();
+      this.options?.debug
+        ? Deno.writeTextFileSync(`fetchedFiles/${url.replace(/https*:\/\//g, "")}`, html)
+        : null;
+      return html;
     }
 
     const result = await retryAsync<Response>(async () => await fetch(url), {
@@ -66,7 +81,7 @@ export abstract class Scrapper {
       progressBar?.render(i, {
         title: `${
           (chapter.title.length >= this._MAX_PROGRESSBAR_TITLE)
-            ? (chapter.title.slice(0, this._MAX_PROGRESSBAR_TITLE - 3) + '...')
+            ? (chapter.title.slice(0, this._MAX_PROGRESSBAR_TITLE - 3) + "...")
             : chapter.title
         }`,
       });

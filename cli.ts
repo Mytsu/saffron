@@ -35,6 +35,7 @@ Options:
 const ant = args.ant ? true : false;
 const antKey = args.antKey ? args.antKey : '';
 const asJson = args.json ? true : false;
+const headless = args.headless ? true : false;
 const init = args.init ? Number(args.init) : undefined;
 const end = args.end ? Number(args.end) : undefined;
 const filename = args.o || args.out;
@@ -53,7 +54,8 @@ async function getCommand() {
     ant,
     antKey,
     debug,
-    silent
+    silent,
+    headless
   }).getNovel({
     init,
     end,
@@ -67,6 +69,7 @@ async function getLength() {
     ant,
     antKey,
     debug,
+    headless
   }).getNovel({ init: 0, end: 0 });
   console.info(
     `Novel: ${novel.metadata.title}\nChapters: ${novel.metadata.chapterUrls.length}`,
