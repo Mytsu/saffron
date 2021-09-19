@@ -1,6 +1,6 @@
 import { assert, assertStringIncludes, exists, delay } from './packages.ts';
 import type { Novel } from '../types/Novel.ts';
-import saveAsMarkdown from '../utils/saveAsMarkdown.ts';
+import { saveAsMarkdown } from '../utils/save.ts';
 
 Deno.test('saveAsMarkdown', async () => {
   const novel = {
