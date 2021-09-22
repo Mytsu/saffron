@@ -2,6 +2,14 @@
 
 A web-scrapper to fetch web novels, supported domains being updated not so often.
 
+## Domain Support
+
+| Domain            | Tests |
+|-------------------|----------------|
+| readlightnovel.me | Pass           |
+| wuxiaworld.co     | Pass           |
+| boxnovel.com      | Fail           |
+
 ## Usage
 
 Download the binaries for your operating system from the [releases](./releases) page.
