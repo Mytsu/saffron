@@ -4,7 +4,6 @@ import {
   DOMParser,
   HTMLDocument,
   ProgressBar,
-  puppeteer,
   retryAsync,
 } from "../packages.ts";
 import { fetchFromAnt } from "../utils/scrapingAntAPI.ts";
@@ -14,26 +13,16 @@ export abstract class Scrapper {
   private _MAX_PROGRESSBAR_TITLE = 23;
   constructor(readonly url: string, readonly options?: ScrapperOptions) {}
 
-  async fetchHtml(url: string): Promise<string> {
+  async fetchHtml(
+    src: string,
+    options?: { method?: string; headers?: Record<string, string> },
+  ): Promise<string> {
     if (this.options?.ant) {
-      return fetchFromAnt(url, { apiKey: this.options?.antKey });
+      return fetchFromAnt(src, { apiKey: this.options?.antKey });
     }
 
-    if (this.options?.headless) {
-      const browser = await puppeteer.launch();
-      const page = await browser.newPage();
-      await page.goto(url);
-      await page.waitForTimeout(2000);
-      await page.waitForNavigation({ waitUntil: "networkidle0" });
-      const html = await page.content();
-      await browser.close();
-      this.options?.debug
-        ? Deno.writeTextFileSync(`fetchedFiles/${url.replace(/https*:\/\//g, "")}`, html)
-        : null;
-      return html;
-    }
-
-    const result = await retryAsync<Response>(async () => await fetch(url), {
+    const result = await retryAsync<Response>(async () =>
+      await fetch(src, options), {
       maxTry: 5,
       delay: 5000,
     });
@@ -42,7 +31,9 @@ export abstract class Scrapper {
 
   async getNovel(options?: { init?: number; end?: number }): Promise<Novel> {
     if (this.options?.debug) console.log("Starting download");
-    const metadata = this.getNovelMetadata(await this.fetchHtml(this.url));
+    const metadata = await this.getNovelMetadata(
+      await this.fetchHtml(this.url),
+    );
     const progressBar = this.options?.silent ? undefined : new ProgressBar({
       title: metadata.title,
       total: metadata.chapterUrls.length,
@@ -57,13 +48,13 @@ export abstract class Scrapper {
     return { metadata, chapters };
   }
 
-  getNovelMetadata(html: string): NovelMetadata {
+  async getNovelMetadata(html: string): Promise<NovelMetadata> {
     if (this.options?.debug) console.log("Fetching novel metadata");
     const document = this._parseDocument(html);
     const title = this.getNovelTitle(document);
     const author = this.getNovelAuthor(document);
     const coverUrl = this.getNovelCoverUrl(document);
-    const chapterUrls = this.getNovelChapterUrls(document);
+    const chapterUrls = await this.getNovelChapterUrls(document);
     return { url: this.url, title, author, coverUrl, chapterUrls };
   }
 
@@ -98,7 +89,9 @@ export abstract class Scrapper {
   }
 
   async getLength() {
-    const metadata = this.getNovelMetadata(await this.fetchHtml(this.url));
+    const metadata = await this.getNovelMetadata(
+      await this.fetchHtml(this.url),
+    );
     return metadata.chapterUrls.length;
   }
 
@@ -115,7 +108,9 @@ export abstract class Scrapper {
   abstract getNovelTitle(document: HTMLDocument): string;
   abstract getNovelAuthor(document: HTMLDocument): string;
   abstract getNovelCoverUrl(document: HTMLDocument): string;
-  abstract getNovelChapterUrls(document: HTMLDocument): string[];
+  abstract getNovelChapterUrls(
+    document?: HTMLDocument,
+  ): Promise<string[]>;
   abstract getChapterTitle(document: HTMLDocument): string;
   abstract getChapterContent(document: HTMLDocument): string;
   abstract format(chapter: Chapter): Chapter;

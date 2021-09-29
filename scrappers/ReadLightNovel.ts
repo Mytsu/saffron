@@ -56,7 +56,7 @@ export class ReadLightNovelDotOrg extends Scrapper {
     );
   }
 
-  getNovelChapterUrls(document: HTMLDocument): string[] {
+  async getNovelChapterUrls(document: HTMLDocument): Promise<string[]> {
     const chapterUrls: string[] = [];
     const _links = document.querySelectorAll(
       '.tab-content > .tab-pane > .chapter-chs > li',

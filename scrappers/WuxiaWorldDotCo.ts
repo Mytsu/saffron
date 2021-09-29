@@ -24,7 +24,7 @@ export class WuxiaWorldDotCo extends Scrapper {
     );
   }
 
-  getNovelChapterUrls(document: HTMLDocument): string[] {
+  async getNovelChapterUrls(document: HTMLDocument): Promise<string[]> {
     const urls: string[] = [];
     document
       .querySelectorAll('.chapter-list > .chapter-item')
