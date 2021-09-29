@@ -14,6 +14,7 @@ export class ReadLightNovelDotOrg extends Scrapper {
       .normalize('NFKD')
       .replace(/<br>/gm, '\n')
       .replace(/\<script\>ChapterMid\(\);\<\/script\>(\\n)?/gm, '')
+      .replace(/\(vitag\.Init\s\=\swindow\.vitag\.Init\s\|\|\s\[\]\)\.push\(function\(\)\{viAPItag\.display\(\"vi_\d*\"\)\}\)/gm, '')
       .replace('&nbsp;', '')
       .replace(/<p>/gm, '')
       .replace(/<\/p>/gm, '\n\n')
