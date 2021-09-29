@@ -13,7 +13,7 @@ function write(data: string, filename: string): boolean {
   }
 }
 
-export function saveAsMarkdown(novel: Novel, filename?: string): boolean {
+export function saveAsMarkdown(novel: Novel, directory?: string): boolean {
   let text = `---\nCJKmainfont: Noto Serif CJK TC\n---\n
 ![cover](${novel.metadata.coverUrl})\n
 # ${novel.metadata.title}\n
@@ -23,12 +23,19 @@ export function saveAsMarkdown(novel: Novel, filename?: string): boolean {
     text = text.concat(`## ${chapter.title}\n\n${chapter.content}\n\n`);
   });
 
-  return write(text, filename ? filename : `${novel.metadata.title}.md`);
+  return write(
+    text,
+    directory
+      ? `${directory}/${novel.metadata.title}.md`
+      : `${novel.metadata.title}.md`,
+  );
 }
 
-export function saveAsJson(novel: Novel, filename?: string): boolean {
+export function saveAsJson(novel: Novel, directory?: string): boolean {
   return write(
     JSON.stringify(novel),
-    filename ? filename : `${novel.metadata.title}.json`,
+    directory
+      ? `${directory}/${novel.metadata.title}.json`
+      : `${novel.metadata.title}.json`,
   );
 }

@@ -8,5 +8,3 @@ export { encodeUrl } from 'https://deno.land/x/encodeurl@1.0.0/mod.ts';
 export { retryAsync } from 'https://deno.land/x/retry@v2.0.0/mod.ts';
 import ProgressBar from "https://deno.land/x/progress@v1.2.4/mod.ts";
 export { ProgressBar };
-import puppeteer from "https://deno.land/x/puppeteer@9.0.1/mod.ts";
-export { puppeteer };

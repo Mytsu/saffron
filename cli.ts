@@ -19,7 +19,7 @@ Commands:
 
 Options:
 
-  -o / --out <filename> Output filename (written in markdown)
+  -o / --out <dir>      Output directory
   --debug               Enables logging
   --silent              Disables progress bar
   --json                Outputs novel as json
@@ -35,10 +35,9 @@ Options:
 const ant = args.ant ? true : false;
 const antKey = args.antKey ? args.antKey : '';
 const asJson = args.json ? true : false;
-const headless = args.headless ? true : false;
 const init = args.init ? Number(args.init) : undefined;
 const end = args.end ? Number(args.end) : undefined;
-const filename = args.o || args.out;
+const directory = args.o || args.out;
 const command = args._[InputEnum.COMMAND];
 const debug = args.debug ? true : false;
 const silent = args.silent ? true : false;
@@ -54,22 +53,20 @@ async function getCommand() {
     ant,
     antKey,
     debug,
-    silent,
-    headless
+    silent
   }).getNovel({
     init,
     end,
   });
-  if (asJson) saveAsJson(novel, filename)
-  else saveAsMarkdown(novel, filename);
+  if (asJson) saveAsJson(novel, directory)
+  else saveAsMarkdown(novel, directory);
 }
 
 async function getLength() {
   const novel = await getScrapper(url.toString(), {
     ant,
     antKey,
-    debug,
-    headless
+    debug
   }).getNovel({ init: 0, end: 0 });
   console.info(
     `Novel: ${novel.metadata.title}\nChapters: ${novel.metadata.chapterUrls.length}`,
