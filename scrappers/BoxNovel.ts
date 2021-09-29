@@ -49,11 +49,22 @@ export class BoxNovelDotCom extends Scrapper {
     return "";
   }
 
-  getNovelChapterUrls(document: HTMLDocument): string[] {
+  async getNovelChapterUrls(): Promise<string[]> {
+    const ajax_request_url =
+      `${this.url}${(this.url.lastIndexOf("/") === (this.url.length - 1)
+        ? ""
+        : "/")}ajax/chapters`;
+    console.log(ajax_request_url);
+    const result = await this.fetchHtml(ajax_request_url, {
+      method: "POST",
+      headers: { "User-Agent": "Mozilla 5.0" },
+    });
+    const document: HTMLDocument = this._parseDocument(result);
     const links: string[] = [];
-    document.querySelectorAll(".wp-manga-chapter > a").forEach((node) =>
-      links.push((node as Element).attributes.getNamedItem("href").value)
-    );
+    document.querySelectorAll("ul.main > li.wp-manga-chapter > a")
+      .forEach((node) =>
+        links.push((node as Element).attributes.getNamedItem("href").value)
+      );
     return links.reverse();
   }
 
