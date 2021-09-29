@@ -4,11 +4,11 @@ A web-scrapper to fetch web novels, supported domains being updated not so often
 
 ## Domain Support
 
-| Domain            | Tests |
+| Domain            | Tests          |
 |-------------------|----------------|
 | readlightnovel.me | Pass           |
 | wuxiaworld.co     | Pass           |
-| boxnovel.com      | Fail           |
+| boxnovel.com      | Pass           |
 
 ## Usage
 
