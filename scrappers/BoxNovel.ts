@@ -12,6 +12,7 @@ export class BoxNovelDotCom extends Scrapper {
   }
 
   format(chapter: Chapter): Chapter {
+    chapter.title = chapter.title.replaceAll("OÇO", "'");
     chapter.content = chapter.content
       .replace(/\t/g, "")
       .replace(/\n\n\n/g, "")
@@ -54,7 +55,6 @@ export class BoxNovelDotCom extends Scrapper {
       `${this.url}${(this.url.lastIndexOf("/") === (this.url.length - 1)
         ? ""
         : "/")}ajax/chapters`;
-    console.log(ajax_request_url);
     const result = await this.fetchHtml(ajax_request_url, {
       method: "POST",
       headers: { "User-Agent": "Mozilla 5.0" },
