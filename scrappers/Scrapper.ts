@@ -69,13 +69,15 @@ export abstract class Scrapper {
       const html = await this.fetchHtml(urls[i]);
       const chapter = this._getFormattedChapter(html);
       if (this.options?.debug) console.log(chapter.title);
-      progressBar?.render(i, {
-        title: `${
-          (chapter.title.length >= this._MAX_PROGRESSBAR_TITLE)
-            ? (chapter.title.slice(0, this._MAX_PROGRESSBAR_TITLE - 3) + "...")
-            : chapter.title
-        }`,
-      });
+      else {
+        progressBar?.render(i, {
+          title: `${
+            (chapter.title.length >= this._MAX_PROGRESSBAR_TITLE)
+              ? (chapter.title.slice(0, this._MAX_PROGRESSBAR_TITLE - 3) + "...")
+              : chapter.title
+          }`,
+        });
+      }
       chapters.push(chapter);
     }
     return chapters;
