@@ -12,7 +12,9 @@ export class BoxNovelDotCom extends Scrapper {
   }
 
   format(chapter: Chapter): Chapter {
-    chapter.title = chapter.title.replaceAll("OÇO", "'");
+    chapter.title = chapter.title
+      .replace(/ÔÇÖ/g, "'")
+      .replace(/ÖÇÖ/g, "'");
     chapter.content = chapter.content
       .replace(/\t/g, "")
       .replace(/\n\n\n/g, "")
