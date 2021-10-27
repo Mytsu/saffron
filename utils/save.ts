@@ -13,7 +13,7 @@ function write(data: string, filename: string): boolean {
   }
 }
 
-export function saveAsMarkdown(novel: Novel, directory?: string): boolean {
+export function saveAsMarkdown(novel: Novel, output?: string): boolean {
   let text = `---\nCJKmainfont: Noto Serif CJK TC\n---\n
 ![cover](${novel.metadata.coverUrl})\n
 # ${novel.metadata.title}\n
@@ -25,8 +25,8 @@ export function saveAsMarkdown(novel: Novel, directory?: string): boolean {
 
   return write(
     text,
-    directory
-      ? `${directory}/${novel.metadata.title}.md`
+    output
+      ? `${output}`
       : `${novel.metadata.title}.md`,
   );
 }

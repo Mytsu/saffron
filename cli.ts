@@ -19,7 +19,7 @@ Commands:
 
 Options:
 
-  -o / --out <dir>      Output directory
+  -o / --out <dir>      Output name
   --debug               Enables logging
   --silent              Disables progress bar
   --json                Outputs novel as json
@@ -37,7 +37,7 @@ const antKey = args.antKey ? args.antKey : '';
 const asJson = args.json ? true : false;
 const init = args.init ? Number(args.init) : undefined;
 const end = args.end ? Number(args.end) : undefined;
-const directory = args.o || args.out;
+const output = args.o || args.out;
 const command = args._[InputEnum.COMMAND];
 const debug = args.debug ? true : false;
 const silent = args.silent ? true : false;
@@ -58,8 +58,8 @@ async function getCommand() {
     init,
     end,
   });
-  if (asJson) saveAsJson(novel, directory)
-  else saveAsMarkdown(novel, directory);
+  if (asJson) saveAsJson(novel, output)
+  else saveAsMarkdown(novel, output);
 }
 
 async function getLength() {
