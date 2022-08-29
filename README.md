@@ -2,14 +2,6 @@
 
 A web-scrapper to fetch web novels, supported domains being updated not so often.
 
-## Domain Support
-
-| Domain            | Tests          |
-|-------------------|----------------|
-| readlightnovel.me | Pass           |
-| wuxiaworld.co     | Pass           |
-| boxnovel.com      | Pass           |
-
 ## Usage
 
 Download the binaries for your operating system from the [releases](./releases) page.
@@ -19,7 +11,7 @@ And run the binary on your terminal with:
 
 ## Run from source
 
-As one of the features of Deno, you can execute code from the web with `deno run`, so running `deno run --allow-net --allow-read --allow-write https://raw.githubusercontent.com/Mytsu/saffron/master/cli.ts get https://www.readlightnovel.me/the-legendary-mechanic --json` will get the job done without any (manual) downloads.
+As one of the features of Deno, you can execute code from the web with `deno run`, so running `deno run --allow-net --allow-read --allow-write https://raw.githubusercontent.com/Mytsu/saffron/master/cli.ts get https://www.readlightnovel.me/supreme-magus`
 
 ## Compile from source
 
