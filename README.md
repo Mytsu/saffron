@@ -4,7 +4,7 @@ A web-scrapper to fetch web novels, supported domains being updated not so often
 
 ## Usage
 
-Download the binaries for your operating system from the [releases](./releases) page.
+Download the binaries for your operating system from the [releases](https://github.com/Mytsu/saffron/releases) page.
 And run the binary on your terminal with:
 
 `saffron --help`
